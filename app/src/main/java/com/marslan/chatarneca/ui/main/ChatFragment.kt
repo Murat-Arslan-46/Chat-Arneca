@@ -28,7 +28,8 @@ class ChatFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        binding.chatMessage.text = viewModel.getUser().currentUser!!.uid
+        binding.chatInputText.hint = viewModel.getUser().currentUser!!.uid
     }
+
 
 }
