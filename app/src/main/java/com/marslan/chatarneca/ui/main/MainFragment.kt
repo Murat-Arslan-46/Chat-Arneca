@@ -77,7 +77,7 @@ class MainFragment : Fragment() {
         val date = sdf.format(Date())
         val message = Message("hi!","0",date)
         toID.add(fromID)
-        val randID = Random().nextInt()
+        val randID = Random().nextInt().toString()
         val chat = Chat(randID,toID, arrayListOf(message))
         for(id in toID){
             var chatList = arrayListOf<Chat>()

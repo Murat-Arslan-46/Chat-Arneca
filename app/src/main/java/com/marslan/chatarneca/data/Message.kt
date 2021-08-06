@@ -1,5 +1,7 @@
 package com.marslan.chatarneca.data
 
+import android.text.Editable
+
 data class Message(
     val text: String = "",
     val fromID: String = "-1",

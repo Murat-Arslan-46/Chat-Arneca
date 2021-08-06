@@ -6,14 +6,14 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 class SharedViewModel : ViewModel() {
-    private var chatID = -1
+    private var chatID = "-1"
     private val auth = Firebase.auth
     private val database = Firebase.database
 
     fun getChat() = chatID
     fun getDatabase() = database
     fun getUser() = auth
-    fun setChat(id: Int){
+    fun setChat(id: String){
         chatID = id
     }
 }
