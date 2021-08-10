@@ -1,4 +1,4 @@
-package com.marslan.chatarneca.ui.main
+package com.marslan.chatarneca.fragments.main
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -7,14 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
-import com.marslan.chatarneca.MainAdapter
+import com.google.firebase.database.FirebaseDatabase
 import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.Chat
-import com.marslan.chatarneca.data.Message
+import com.marslan.chatarneca.data.SharedViewModel
+import com.marslan.chatarneca.data.messagedb.EntityMessage
 import com.marslan.chatarneca.databinding.FragmentMainBinding
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,9 +24,9 @@ import kotlin.collections.ArrayList
 
 class MainFragment : Fragment() {
 
-    private lateinit var viewModel: SharedViewModel
     private lateinit var adapter: MainAdapter
     private lateinit var binding: FragmentMainBinding
+    private lateinit var viewModel: SharedViewModel
     private lateinit var myRefPath: String
 
     override fun onCreateView(
@@ -32,15 +34,17 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainBinding.inflate(inflater, container, false)
-        adapter = MainAdapter (this::openChat)
         return (binding.root)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
-        myRefPath = viewModel.getUser().currentUser!!.uid
-        val myRef = viewModel.getDatabase().getReference(myRefPath)
+        adapter = MainAdapter (this::openChat)
+        viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+        val auth = viewModel.getAuth()
+        val db = viewModel.getDB()
+        myRefPath = auth.currentUser!!.uid
+        val myRef = db.getReference(myRefPath)
         myRef.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 val value = snapshot.getValue<ArrayList<Chat>>()
@@ -54,34 +58,25 @@ class MainFragment : Fragment() {
                 TODO("Not yet implemented")
             }
         })
-        binding.mainSignOut.setOnClickListener {
-            viewModel.getUser().signOut()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container,LoginFragment()).commit()
-        }
         binding.newChat.setOnClickListener {
             var toID = "RlFxGSF10khblvd7stfZaRvMazJ2"
             if(myRefPath == "RlFxGSF10khblvd7stfZaRvMazJ2")
                 toID = "Hf0LR9vztGWKjhjX4vWxxAr93E53"
-            createChat(arrayListOf(toID))
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container,ChatFragment(),"CHAT").commit()
+            createChat(db,arrayListOf(toID,myRefPath))
         }
         binding.mainChatList.adapter = adapter
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun createChat(toID: ArrayList<String>){
-        val fromID = viewModel.getUser().currentUser!!.uid
+    private fun createChat(db : FirebaseDatabase, toID : ArrayList<String>){
         val sdf = SimpleDateFormat("dd/MM/yy HH:mm")
         val date = sdf.format(Date())
-        val message = Message("hi!","0",date)
-        toID.add(fromID)
         val randID = Random().nextInt().toString()
+        val message = EntityMessage(1,"hi!",date,"0",randID.toInt())
         val chat = Chat(randID,toID, arrayListOf(message))
         for(id in toID){
             var chatList = arrayListOf<Chat>()
-            val ref = viewModel.getDatabase().getReference(id)
+            val ref = db.getReference(id)
             ref.get().addOnSuccessListener {
                 if(it.value != null)
                     chatList = it.value as ArrayList<Chat>
@@ -89,6 +84,9 @@ class MainFragment : Fragment() {
                 ref.setValue(chatList)
             }
         }
+        viewModel.setChat(adapter.itemCount.toString())
+        findNavController().navigate(R.id.action_mainFragment_to_chatFragment)
+
 
     }
 
@@ -98,9 +96,8 @@ class MainFragment : Fragment() {
         adapter.notifyDataSetChanged()
     }
 
-    private fun openChat(chat: Chat){
-        viewModel.setChat(chat.id)
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.container,ChatFragment(),"CHAT").commit()
+    private fun openChat(chatID: String){
+        viewModel.setChat(chatID)
+        findNavController().navigate(R.id.action_mainFragment_to_chatFragment)
     }
 }

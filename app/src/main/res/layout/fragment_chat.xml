@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.ChatFragment">
+    tools:context=".fragments.chat.ChatFragment">
 
 
     <EditText
@@ -45,5 +45,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:itemCount="5"
-        tools:listitem="@layout/item_message_send" />
+        tools:listitem="@layout/item_message_send"
+        app:reverseLayout="false"
+        app:stackFromEnd="true"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

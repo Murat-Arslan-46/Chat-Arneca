@@ -1,11 +1,12 @@
 package com.marslan.chatarneca.data
 
 import com.marslan.chatarneca.R
+import com.marslan.chatarneca.data.messagedb.EntityMessage
 import com.marslan.chatarneca.databinding.ItemMessageReceiveBinding
 import com.marslan.chatarneca.databinding.ItemMessageSendBinding
 import com.xwray.groupie.databinding.BindableItem
 
-class SendMessageItem(private val message: Message) : BindableItem<ItemMessageSendBinding>() {
+class SendMessageItem(private val message: EntityMessage) : BindableItem<ItemMessageSendBinding>() {
     override fun getLayout(): Int {
         return R.layout.item_message_send
     }
@@ -15,7 +16,7 @@ class SendMessageItem(private val message: Message) : BindableItem<ItemMessageSe
     }
 }
 
-class ReceiveMessageItem(private val message: Message) : BindableItem<ItemMessageReceiveBinding>() {
+class ReceiveMessageItem(private val message: EntityMessage) : BindableItem<ItemMessageReceiveBinding>() {
     override fun getLayout(): Int {
         return R.layout.item_message_receive
     }

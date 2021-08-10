@@ -3,34 +3,25 @@ package com.marslan.chatarneca
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
-import com.marslan.chatarneca.ui.main.*
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import com.marslan.chatarneca.data.SharedViewModel
 
-class MainActivity : AppCompatActivity(R.layout.main_activity) {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: SharedViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
-        viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().apply {
-                setReorderingAllowed(true)
-                replace(R.id.container,LoginFragment())
-            }.commit()
-        }
-    }
+        viewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        setupActionBarWithNavController(navController, appBarConfiguration)
 
-    override fun onBackPressed() {
-        val myFragment = supportFragmentManager.findFragmentByTag("CHAT")
-        if(myFragment  != null && myFragment.isVisible){
-            supportFragmentManager.beginTransaction().apply {
-                setReorderingAllowed(true)
-                replace(R.id.container,MainFragment())
-            }.commit()
-            return
-        }
-        super.onBackPressed()
     }
 
 }
