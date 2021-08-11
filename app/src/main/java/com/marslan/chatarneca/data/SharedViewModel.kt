@@ -9,33 +9,38 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.marslan.chatarneca.data.chatdb.EntityChat
 import com.marslan.chatarneca.data.messagedb.EntityMessage
-import com.marslan.chatarneca.data.messagedb.MessageDatabase
-import com.marslan.chatarneca.data.messagedb.MessageRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SharedViewModel(application: Application): AndroidViewModel(application) {
-    private val readAllData: LiveData<List<EntityMessage>>
-    private val repository : MessageRepository
+    private val readAllChat: LiveData<List<EntityChat>>
+    private val repository : SharedRepository
     private val auth : FirebaseAuth
     private val db : FirebaseDatabase
-    private var chatID : String
+    private var chat : EntityChat
+
     init {
-        val messageDao = MessageDatabase.getDatabase(application).messageDao()
-        repository = MessageRepository(messageDao)
-        readAllData = repository.readAllData
+        val messageDao = SharedDatabase.getDatabase(application).messageDao()
+        repository = SharedRepository(messageDao)
+        readAllChat = repository.readAllChat
         auth = Firebase.auth
         db = Firebase.database
-        chatID = "-1"
+        chat = EntityChat()
     }
     fun getAuth() = auth
+
     fun getDB() = db
-    fun getChat() = chatID
-    fun setChat(id : String){ chatID = id }
-    fun newMessage(entityMessage: EntityMessage){
+
+    fun getChat() = chat
+    fun setChat(newChat : EntityChat){ chat = newChat }
+
+    fun getMessage(id: Int) = repository.getChatMessage(id)
+    fun newMessage(entityMessage: EntityMessage,toID: String){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.newMessage(entityMessage)
+            repository.newMessage(entityMessage,toID)
         }
     }
+    fun getChatList() = readAllChat
 }

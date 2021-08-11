@@ -1,20 +1,22 @@
-package com.marslan.chatarneca.data.messagedb
+package com.marslan.chatarneca.data
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.marslan.chatarneca.data.chatdb.EntityChat
+import com.marslan.chatarneca.data.messagedb.EntityMessage
 
-@Database(entities = [EntityMessage::class], version = 1)
-abstract class MessageDatabase : RoomDatabase() {
+@Database(entities = [EntityMessage::class, EntityChat::class], version = 1)
+abstract class SharedDatabase : RoomDatabase() {
 
-    abstract fun messageDao(): MessageDao
+    abstract fun messageDao(): SharedDao
 
     companion object {
         @Volatile
-        private var INSTANCE: MessageDatabase? = null
+        private var INSTANCE: SharedDatabase? = null
 
-        fun getDatabase(context: Context): MessageDatabase {
+        fun getDatabase(context: Context): SharedDatabase {
             val temp = INSTANCE
             if(temp != null){
                 return temp
@@ -22,8 +24,8 @@ abstract class MessageDatabase : RoomDatabase() {
             synchronized(this){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    MessageDatabase::class.java,
-                    "chat_arneca_db"
+                    SharedDatabase::class.java,
+                    "arneca_chat_db"
                 ).build()
                 INSTANCE = instance
                 return instance

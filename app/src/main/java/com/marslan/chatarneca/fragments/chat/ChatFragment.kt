@@ -9,15 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
 import com.marslan.chatarneca.data.*
 import com.marslan.chatarneca.databinding.FragmentChatBinding
 import com.marslan.chatarneca.data.messagedb.EntityMessage
 import com.marslan.chatarneca.data.SharedViewModel
+import com.marslan.chatarneca.data.chatdb.EntityChat
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import java.text.SimpleDateFormat
@@ -32,9 +30,10 @@ class ChatFragment : Fragment() {
     private lateinit var viewModel: SharedViewModel
     private lateinit var binding: FragmentChatBinding
     private val adapter = GroupAdapter<GroupieViewHolder>()
-    private lateinit var chat: Chat
+    private lateinit var chat: EntityChat
     private lateinit var currentList: ArrayList<EntityMessage>
 
+    @SuppressLint("FragmentLiveDataObserve", "NotifyDataSetChanged", "RestrictedApi")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,52 +47,38 @@ class ChatFragment : Fragment() {
 
         val auth = viewModel.getAuth()
         val db = viewModel.getDB()
-
-        db.getReference(auth.currentUser!!.uid)
-            .child(viewModel.getChat())
-            .addValueEventListener(object : ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if(snapshot.value != null) {
-                        val value = snapshot.getValue<Chat>()
-                        newMessage(auth.uid.toString(),value)
-                        db.getReference(auth.currentUser!!.uid)
-                            .child(viewModel.getChat())
-                            .setValue(Chat(value!!.id,value.userList, arrayListOf()))
-                    }
-                    else
-                        Log.d("get failed","null list")
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    Log.d("fail message",error.message)
-                }
-        })
+        chat = viewModel.getChat()
         binding.chatSendMessage.setOnClickListener {
             sendMessage(db,auth)
         }
         binding.chatMessageList.adapter = adapter
+        adapter.clear()
+        viewModel.getMessage(chat.chatID).observe(requireActivity(), {
+            currentList = it as ArrayList<EntityMessage>
+            loadMessage(auth.currentUser!!.uid,currentList)
+        })
+
         return (binding.root)
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun sendMessage(db : FirebaseDatabase, auth : FirebaseAuth) {
+    @SuppressLint("SimpleDateFormat", "NotifyDataSetChanged")
+    private fun sendMessage(db : FirebaseDatabase,auth: FirebaseAuth) {
         val text = binding.chatInputText.text.toString()
         binding.chatInputText.text.clear()
         val fromID = auth.currentUser!!.uid
         val sdf = SimpleDateFormat("dd/MM/yy HH:mm")
         val date = sdf.format(Date())
-        val id = 1
-        val message = EntityMessage(id,text,date,fromID,chat.id.toInt())
+        val id = (chat.chatID*1000)+currentList.size
+        val message = EntityMessage(id,text,date,fromID,chat.chatID)
         currentList.add(message)
-        for(user in chat.userList)
-            db.getReference(user)
-                .child(viewModel.getChat())
-                .child("messageList")
-                .setValue(currentList)
+        db.getReference(chat.toID)
+            .push().setValue(message)
+        viewModel.newMessage(message,chat.toID)
+        adapter.add(SendMessageItem(message))
     }
 
-    private fun newMessage(uid: String, value: Chat?) {
-        chat = value!!
-        val list = chat.messageList
+    @SuppressLint("NotifyDataSetChanged")
+    private fun loadMessage(uid: String, list: ArrayList<EntityMessage>){
         adapter.clear()
         list.forEach {
             if (it.fromID == uid) {
@@ -101,8 +86,8 @@ class ChatFragment : Fragment() {
             } else {
                 adapter.add(ReceiveMessageItem(it))
             }
-            viewModel.newMessage(it)
         }
-        currentList = list
+        adapter.notifyDataSetChanged()
     }
+
 }

@@ -7,9 +7,11 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.marslan.chatarneca.data.SharedViewModel
+import com.marslan.chatarneca.data.chatdb.EntityChat
 import com.marslan.chatarneca.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
