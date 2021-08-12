@@ -15,8 +15,11 @@ import com.marslan.chatarneca.databinding.ActivityLoginBinding
 import android.view.animation.Animation
 
 import android.view.animation.AlphaAnimation
-
-
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.getValue
+import com.marslan.chatarneca.data.userdb.EntityUser
 
 
 class LoginActivity : AppCompatActivity() {
@@ -116,10 +119,26 @@ class LoginActivity : AppCompatActivity() {
             binding.loginPassword.text.toString()
         ).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d("TAG", "createUserWithEmail:success")
-                } else {
+                    val user = EntityUser(
+                        auth.uid.toString(),
+                        "name",
+                        binding.loginUserName.text.toString(),
+                        "111-222-33-44"
+                    )
+                    viewModel.getDB().getReference("users").get().addOnSuccessListener{
+                        if(it.value != null){
+                            var value = it.getValue<ArrayList<EntityUser>>()
+                            if(value != null)
+                                value.add(user)
+                            else
+                                value = arrayListOf(user)
+                            viewModel.getDB().getReference("users").setValue(value)
+                        }
+                    }
+                     openApp()
+                }
+                else {
                     Toast.makeText(this,task.exception.toString(),Toast.LENGTH_LONG).show()
-                    Log.w("TAG", "createUserWithEmail:failure", task.exception)
                 }
             }
     }

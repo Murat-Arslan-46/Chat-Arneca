@@ -43,7 +43,7 @@ class MainAdapter(private val clickListener: (EntityChat) -> Unit ) :
     }
     private class ItemCallBack: DiffUtil.ItemCallback<EntityChat>() {
         override fun areItemsTheSame(oldItem: EntityChat, newItem: EntityChat) =
-            oldItem.chatID == newItem.chatID
+            oldItem.lastMessage == newItem.lastMessage
         override fun areContentsTheSame(oldItem: EntityChat, newItem: EntityChat) =
             oldItem == newItem
 
