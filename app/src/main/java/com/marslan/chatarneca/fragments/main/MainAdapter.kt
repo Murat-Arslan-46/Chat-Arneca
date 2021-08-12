@@ -1,17 +1,15 @@
 package com.marslan.chatarneca.fragments.main
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.marslan.chatarneca.data.SharedRepository
-import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.chatdb.EntityChat
-import com.marslan.chatarneca.data.messagedb.EntityMessage
 import com.marslan.chatarneca.databinding.ItemChatListBinding
-import java.security.acl.Owner
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainAdapter(private val clickListener: (EntityChat) -> Unit ) :
     ListAdapter<EntityChat, RecyclerView.ViewHolder>(ItemCallBack()) {
@@ -27,8 +25,17 @@ class MainAdapter(private val clickListener: (EntityChat) -> Unit ) :
 
     inner class ChatViewHolder(private val binding: ItemChatListBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("SimpleDateFormat")
         fun bind(chat: EntityChat, clickListener: (EntityChat) -> Unit) {
-            binding.chatDate.text = chat.lastDate
+            val sdf = SimpleDateFormat("dd/MM/yy HH:mm")
+            val date = sdf.format(Date())
+            val currentDate = date.split(" ")
+            val messageDate = chat.lastDate.split(" ")
+            binding.chatDate.text =
+                if(messageDate[0] == currentDate[0])
+                    messageDate[1]
+                else
+                    messageDate[0]
             binding.chatText.text = chat.lastMessage
             binding.chatName.text = chat.chatName
             binding.root.setOnClickListener { clickListener(chat) }

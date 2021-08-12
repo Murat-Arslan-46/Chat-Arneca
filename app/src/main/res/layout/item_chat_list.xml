@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="@color/primary_color"
-    android:padding="5dp">
+    android:background="@drawable/mf_item"
+    android:padding="7dp">
 
     <ImageView
         android:id="@+id/chat_image"
@@ -15,15 +15,16 @@
         app:layout_constraintEnd_toStartOf="@+id/chat_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/person_icon" />
+        app:srcCompat="@drawable/mf_item_person_icon" />
 
     <TextView
         android:id="@+id/chat_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
         android:fontFamily="@font/armata"
         android:text="TextView"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/chat_text"
         app:layout_constraintEnd_toStartOf="@+id/chat_date"
@@ -34,9 +35,10 @@
         android:id="@+id/chat_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:fontFamily="@font/armata"
         android:text="TextView"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.511"
@@ -47,9 +49,10 @@
         android:id="@+id/chat_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
         android:fontFamily="@font/armata"
         android:text="TextView"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/chat_text"
         app:layout_constraintEnd_toEndOf="parent"

@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.marslan.chatarneca.LoginActivity
 import com.marslan.chatarneca.R

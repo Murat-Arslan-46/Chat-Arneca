@@ -27,9 +27,9 @@ class ContactFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         binding.newContact.setOnClickListener {
             if(binding.newId.text.isNotEmpty()) {
-                viewModel.getChatList().observe(requireActivity(),{ it ->
+                viewModel.getChatList().observe(requireActivity(),{ list ->
                     var randID = (1..9999).random()
-                    it.forEach {
+                    list.forEach {
                         if(it.toID == binding.newId.text.toString())
                             randID = it.chatID
                     }

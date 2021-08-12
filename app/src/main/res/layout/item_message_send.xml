@@ -19,7 +19,7 @@
             android:maxWidth="250dp"
             android:layout_width="wrap_content"
             android:padding="16dp"
-            android:background="@drawable/bg_receive_message"
+            android:background="@drawable/chf_receive_message"
             android:text="@{message.text}"
             tools:text="null"
             android:textColor="@android:color/white"
