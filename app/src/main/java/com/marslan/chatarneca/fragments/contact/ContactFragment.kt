@@ -27,11 +27,19 @@ class ContactFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         binding.newContact.setOnClickListener {
             if(binding.newId.text.isNotEmpty()) {
-                val randID = (1000..9999).random()
-                val name = "chat"
-                val chat = EntityChat(randID,name,binding.newId.text.toString())
-                viewModel.setChat(chat)
-                findNavController().navigate(R.id.action_contactFragment_to_chatFragment)
+                viewModel.getChatList().observe(requireActivity(),{ it ->
+                    var randID = (1..9999).random()
+                    it.forEach {
+                        if(it.toID == binding.newId.text.toString())
+                            randID = it.chatID
+                    }
+                    val name = "chat"
+                    val chat = EntityChat(randID,name,binding.newId.text.toString())
+                    viewModel.setChat(chat)
+                    if(findNavController().currentDestination!!.id == R.id.contactFragment)
+                    findNavController().navigate(R.id.action_contactFragment_to_chatFragment)
+                })
+
             }
         }
 

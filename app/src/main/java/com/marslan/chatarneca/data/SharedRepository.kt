@@ -10,18 +10,22 @@ class SharedRepository(private val sharedDao: SharedDao) {
 
     suspend fun newMessage(entityMessage: EntityMessage, toID: String){
         sharedDao.newMessage(entityMessage)
-        sharedDao.newChat(
-            EntityChat(
-            entityMessage.chatID,
-            "chat",
-            toID,
-            entityMessage.text,
-            entityMessage.date
-        )
-        )
+        newChat(entityMessage,toID)
         sharedDao.updateChat(entityMessage.text,entityMessage.date,entityMessage.chatID)
     }
 
     val readAllChat: LiveData<List<EntityChat>> = sharedDao.getChat()
+
+    private suspend fun newChat(entityMessage: EntityMessage,toID: String){
+        sharedDao.newChat(
+            EntityChat(
+                entityMessage.chatID,
+                "chat",
+                toID,
+                entityMessage.text,
+                entityMessage.date
+            )
+        )
+    }
 
 }

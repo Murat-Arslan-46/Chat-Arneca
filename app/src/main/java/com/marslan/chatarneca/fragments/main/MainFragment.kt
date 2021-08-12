@@ -47,8 +47,7 @@ class MainFragment : Fragment() {
                         }
                     }
                     viewModel.getDB()
-                        .getReference(auth.currentUser!!.uid)
-                        .child(previousChildName.toString()).removeValue()
+                        .getReference(auth.currentUser!!.uid).removeValue()
                 }
 
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {

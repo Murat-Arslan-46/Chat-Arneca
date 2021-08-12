@@ -53,9 +53,17 @@ class ChatFragment : Fragment() {
         }
         binding.chatMessageList.adapter = adapter
         adapter.clear()
-        viewModel.getMessage(chat.chatID).observe(requireActivity(), {
-            currentList = it as ArrayList<EntityMessage>
-            loadMessage(auth.currentUser!!.uid,currentList)
+        viewModel.getMessage(chat.chatID).observe(requireActivity(), { list ->
+            currentList = list as ArrayList<EntityMessage>
+            adapter.clear()
+            list.forEach {
+                if (it.fromID == auth.currentUser!!.uid) {
+                    adapter.add(SendMessageItem(it))
+                } else {
+                    adapter.add(ReceiveMessageItem(it))
+                }
+            }
+            adapter.notifyDataSetChanged()
         })
 
         return (binding.root)
@@ -68,7 +76,11 @@ class ChatFragment : Fragment() {
         val fromID = auth.currentUser!!.uid
         val sdf = SimpleDateFormat("dd/MM/yy HH:mm")
         val date = sdf.format(Date())
-        val id = (chat.chatID*1000)+currentList.size
+        val id =
+            if(currentList.isEmpty())
+                chat.chatID*10000
+            else
+                currentList[currentList.size-1].id+1
         val message = EntityMessage(id,text,date,fromID,chat.chatID)
         currentList.add(message)
         db.getReference(chat.toID)
@@ -76,18 +88,4 @@ class ChatFragment : Fragment() {
         viewModel.newMessage(message,chat.toID)
         adapter.add(SendMessageItem(message))
     }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun loadMessage(uid: String, list: ArrayList<EntityMessage>){
-        adapter.clear()
-        list.forEach {
-            if (it.fromID == uid) {
-                adapter.add(SendMessageItem(it))
-            } else {
-                adapter.add(ReceiveMessageItem(it))
-            }
-        }
-        adapter.notifyDataSetChanged()
-    }
-
 }
