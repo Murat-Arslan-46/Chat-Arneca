@@ -11,5 +11,5 @@ data class EntityMessage(
     val date: String = "00/00/00 00:00",
     val fromID: String = "0",
     val chatID: Int = 1,
-    val isRead: Boolean = false
+    var isRead: Boolean = false
 )

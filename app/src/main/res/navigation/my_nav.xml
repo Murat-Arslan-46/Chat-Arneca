@@ -13,9 +13,6 @@
         <action
             android:id="@+id/action_mainFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_contactFragment"
-            app:destination="@id/contactFragment" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
@@ -25,14 +22,13 @@
         <action
             android:id="@+id/action_chatFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_chatFragment_to_contactFragment"
+            app:destination="@id/contactFragment" />
     </fragment>
     <fragment
         android:id="@+id/contactFragment"
         android:name="com.marslan.chatarneca.fragments.contact.ContactFragment"
         android:label="new chat"
-        tools:layout="@layout/fragment_contact">
-        <action
-            android:id="@+id/action_contactFragment_to_chatFragment"
-            app:destination="@id/chatFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_contact"/>
 </navigation>

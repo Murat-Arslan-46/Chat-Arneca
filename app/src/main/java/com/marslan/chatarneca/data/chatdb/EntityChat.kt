@@ -9,6 +9,7 @@ data class EntityChat(
     val chatID: Int = -1,
     val chatName: String = "chat",
     val toID: String = "null",
+    val isRead: Boolean = false,
     val lastMessage: String = "hi!",
     val lastDate: String = "00:00"
 )

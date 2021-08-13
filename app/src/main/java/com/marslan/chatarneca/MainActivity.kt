@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         viewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
+        viewModel.listenerOpen()
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.fragment) as NavHostFragment
         val navController = navHostFragment.navController

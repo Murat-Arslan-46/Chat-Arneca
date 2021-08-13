@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.*
 import com.marslan.chatarneca.databinding.FragmentChatBinding
 import com.marslan.chatarneca.data.messagedb.EntityMessage
@@ -37,15 +39,22 @@ class ChatFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = FragmentChatBinding
             .inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())
             .get(SharedViewModel::class.java)
+        return (binding.root)
+    }
 
-        val auth = viewModel.getAuth()
-        val db = viewModel.getDB()
-        chat = viewModel.getChat()
+    override fun onResume() {
+        super.onResume()
+        if(viewModel.getChat() == null)
+            findNavController().navigate(R.id.action_chatFragment_to_contactFragment)
+        else
+            createFragment(viewModel.getDB(), viewModel.getAuth())
+    }
+    private fun createFragment(db: FirebaseDatabase,auth: FirebaseAuth){
+        chat = viewModel.getChat()!!
         binding.chatSendMessage.setOnClickListener {
             sendMessage(db,auth)
         }
@@ -62,9 +71,9 @@ class ChatFragment : Fragment() {
                 }
             }
             adapter.notifyDataSetChanged()
+            binding.chatMessageList.smoothScrollToPosition(binding.chatMessageList.adapter!!.itemCount)
         })
 
-        return (binding.root)
     }
 
     @SuppressLint("SimpleDateFormat", "NotifyDataSetChanged")
@@ -79,11 +88,14 @@ class ChatFragment : Fragment() {
                 chat.chatID*10000
             else
                 currentList[currentList.size-1].id+1
-        val message = EntityMessage(id,text,date,fromID,chat.chatID)
+        val message = EntityMessage(id,text,date,fromID,chat.chatID,false)
         currentList.add(message)
         db.getReference(chat.toID)
             .push().setValue(message)
+        message.isRead = true
         viewModel.newMessage(message,chat.toID)
         adapter.add(SendMessageItem(message))
+        adapter.notifyDataSetChanged()
+        binding.chatMessageList.smoothScrollToPosition(binding.chatMessageList.adapter!!.itemCount)
     }
 }

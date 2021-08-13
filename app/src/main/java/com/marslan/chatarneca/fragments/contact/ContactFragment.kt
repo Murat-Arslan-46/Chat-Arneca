@@ -2,6 +2,7 @@ package com.marslan.chatarneca.fragments.contact
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
-import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.chatdb.EntityChat
 import com.marslan.chatarneca.data.userdb.EntityUser
@@ -36,7 +36,7 @@ class ContactFragment : Fragment() {
         viewModel.getDB().getReference("users").addListenerForSingleValueEvent(
             object : ValueEventListener{
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    Log.d("get failed","user list")
                 }
                 @SuppressLint("NotifyDataSetChanged")
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -53,17 +53,18 @@ class ContactFragment : Fragment() {
     }
     private fun openChat(id: String){
         viewModel.getChatList().observe(requireActivity(),{ list ->
-            var randID = (1..9999).random()
-            list.forEach {
-                if(it.toID == id)
-                    randID = it.chatID
-            }
-            val name = "chat"
-            val chat = EntityChat(randID,name,id)
-            viewModel.setChat(chat)
-            if(findNavController().currentDestination!!.id == R.id.contactFragment) {
-                findNavController().popBackStack()
-                findNavController().navigate(R.id.action_mainFragment_to_chatFragment)
+            try {
+                var randID = (1..9999).random()
+                list.forEach {
+                    if(it.toID == id)
+                        randID = it.chatID
+                }
+                val name = "chat"
+                val chat = EntityChat(randID,name,id)
+                viewModel.setChat(chat)
+                findNavController().navigateUp()
+            }catch (e: Exception){
+                Log.d("","")
             }
         })
     }

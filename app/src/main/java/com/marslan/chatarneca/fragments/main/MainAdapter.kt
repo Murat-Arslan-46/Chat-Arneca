@@ -1,6 +1,7 @@
 package com.marslan.chatarneca.fragments.main
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -13,6 +14,7 @@ import java.util.*
 
 class MainAdapter(private val clickListener: (EntityChat) -> Unit ) :
     ListAdapter<EntityChat, RecyclerView.ViewHolder>(ItemCallBack()) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflate = LayoutInflater.from(parent.context)
         val binding = ItemChatListBinding.inflate(inflate, parent, false)
@@ -37,6 +39,10 @@ class MainAdapter(private val clickListener: (EntityChat) -> Unit ) :
                 else
                     messageDate[0]
             binding.chatText.text = chat.lastMessage
+            if(chat.isRead)
+                binding.chatText.setTypeface(null,Typeface.BOLD)
+            else
+                binding.chatText.setTypeface(null,Typeface.NORMAL)
             binding.chatName.text = chat.chatName
             binding.root.setOnClickListener { clickListener(chat) }
         }
@@ -46,6 +52,5 @@ class MainAdapter(private val clickListener: (EntityChat) -> Unit ) :
             oldItem.lastMessage == newItem.lastMessage
         override fun areContentsTheSame(oldItem: EntityChat, newItem: EntityChat) =
             oldItem == newItem
-
     }
 }
