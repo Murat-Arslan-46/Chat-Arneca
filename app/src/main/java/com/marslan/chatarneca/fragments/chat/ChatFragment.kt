@@ -43,17 +43,12 @@ class ChatFragment : Fragment() {
             .inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())
             .get(SharedViewModel::class.java)
+        createFragment(viewModel.getDB(), viewModel.getAuth())
         return (binding.root)
     }
 
-    override fun onResume() {
-        super.onResume()
-        if(viewModel.getChat() == null)
-            findNavController().navigate(R.id.action_chatFragment_to_contactFragment)
-        else
-            createFragment(viewModel.getDB(), viewModel.getAuth())
-    }
-    private fun createFragment(db: FirebaseDatabase,auth: FirebaseAuth){
+    @SuppressLint("NotifyDataSetChanged")
+    private fun createFragment(db: FirebaseDatabase, auth: FirebaseAuth){
         chat = viewModel.getChat()!!
         binding.chatSendMessage.setOnClickListener {
             sendMessage(db,auth)

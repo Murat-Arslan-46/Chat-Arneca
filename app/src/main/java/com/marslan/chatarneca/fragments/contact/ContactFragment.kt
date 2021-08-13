@@ -13,6 +13,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
+import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.chatdb.EntityChat
 import com.marslan.chatarneca.data.userdb.EntityUser
@@ -63,6 +64,7 @@ class ContactFragment : Fragment() {
                 val chat = EntityChat(randID,name,id)
                 viewModel.setChat(chat)
                 findNavController().navigateUp()
+                findNavController().navigate(R.id.action_mainFragment_to_chatFragment)
             }catch (e: Exception){
                 Log.d("","")
             }

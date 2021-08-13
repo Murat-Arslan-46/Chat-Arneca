@@ -31,8 +31,7 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         val auth = viewModel.getAuth()
         binding.newChat.setOnClickListener {
-            viewModel.setChat(null)
-            findNavController().navigate(R.id.action_mainFragment_to_chatFragment)
+            findNavController().navigate(R.id.action_mainFragment_to_contactFragment)
         }
         binding.mainSignOut.setOnClickListener {
             auth.signOut()

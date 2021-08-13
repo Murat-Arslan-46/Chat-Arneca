@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/other_color"
-    tools:context=".LoginActivity"
-    >
+    android:background="@drawable/login_background"
+    tools:context=".LoginActivity">
 
     <TextView
         android:id="@+id/textView"
@@ -25,6 +24,9 @@
         android:id="@+id/login_user_name"
         android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="200dp"
+        android:layout_marginEnd="100dp"
         android:background="#27000000"
         android:ems="10"
         android:fontFamily="@font/armata"
@@ -61,9 +63,9 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/armata"
         android:padding="5dp"
+        android:text="@string/common_signin_button_text"
         android:textColor="@color/white"
         android:textSize="14sp"
-        android:text="@string/common_signin_button_text"
         app:layout_constraintEnd_toStartOf="@+id/login_create"
         app:layout_constraintStart_toStartOf="@+id/login_password"
         app:layout_constraintTop_toBottomOf="@+id/login_password" />
@@ -74,18 +76,18 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/armata"
         android:padding="5dp"
+        android:text="@string/new_account"
         android:textColor="@color/white"
         android:textSize="14sp"
-        android:text="@string/new_account"
         app:layout_constraintEnd_toEndOf="@+id/login_password"
         app:layout_constraintStart_toEndOf="@+id/login_submit"
         app:layout_constraintTop_toBottomOf="@+id/login_password" />
 
     <ImageView
         android:id="@+id/login_logo"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:background="@color/other_color"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/login_background"
         android:contentDescription="@string/app_name"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"

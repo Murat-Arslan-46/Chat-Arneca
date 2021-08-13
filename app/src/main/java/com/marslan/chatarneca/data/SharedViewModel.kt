@@ -1,7 +1,16 @@
 package com.marslan.chatarneca.data
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -14,6 +23,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.marslan.chatarneca.MainActivity
+import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.chatdb.EntityChat
 import com.marslan.chatarneca.data.messagedb.EntityMessage
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +36,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     private val repository : SharedRepository
     private val auth : FirebaseAuth
     private val db : FirebaseDatabase
-    private var chat : EntityChat?
+    private var chat : EntityChat
 
     init {
         val messageDao = SharedDatabase.getDatabase(application).messageDao()
@@ -35,7 +46,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
         db = Firebase.database
         chat = EntityChat()
     }
-    fun listenerOpen(){
+    fun listenerOpen(context: Context){
         getDB().getReference(auth.currentUser!!.uid)
             .addChildEventListener(object: ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
@@ -45,6 +56,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
                             newMessage(message,message.fromID)
                             getDB()
                                 .getReference(auth.currentUser!!.uid).removeValue()
+                            notification(context,message)
                         }
                     }
                 }
@@ -66,21 +78,49 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
                 }
             })
     }
+    fun notification(context: Context,message: EntityMessage){
+        createNotificationChannel(context)
+        val channelId = "${context.packageName}-${context.getString(R.string.app_name)}"
+        val intent = Intent(context, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent,0)
+        val notificationBuilder = NotificationCompat.Builder(context, channelId).apply {
+            setSmallIcon(R.drawable.ic_launcher_foreground)
+            setContentTitle(message.fromID)
+            setContentText(message.text)
+            setContentIntent(pendingIntent)
+            setStyle(NotificationCompat.BigTextStyle().bigText(message.text))
+            priority = NotificationCompat.PRIORITY_DEFAULT
+            setAutoCancel(true)
+        }
+        val notificationManager = NotificationManagerCompat.from(context)
+        notificationManager.notify(1001, notificationBuilder.build())
+    }
+    @SuppressLint("WrongConstant")
+    fun createNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "${context.packageName}-${context.getString(R.string.app_name)}",
+                context.getString(R.string.app_name),
+                NotificationManagerCompat.IMPORTANCE_DEFAULT
+            )
+            channel.description = "App notification channel."
+            channel.setShowBadge(false)
+            val notificationManager = context.getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
     fun getAuth() = auth
-
     fun getDB() = db
-
     fun getChat() = chat
-    fun setChat(newChat: EntityChat?){ chat = newChat }
-
+    fun setChat(newChat: EntityChat){ chat = newChat }
     fun getMessage(id: Int) : LiveData<List<EntityMessage>> {
         viewModelScope.launch(Dispatchers.IO) {
             try{repository.updateChat(false,id)}
             catch (e: Exception){Log.e("read fail", e.message.toString())}
         }
-    return repository.getChatMessage(id)
-}
-
+        return repository.getChatMessage(id)
+    }
     fun newMessage(entityMessage: EntityMessage,toID: String){
         viewModelScope.launch(Dispatchers.IO) {
             repository.newMessage(entityMessage,toID)

@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Chat Arneca</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="login_username">username</string>
     <string name="password">password</string>
     <string name="new_account">new account</string>
+    <string name="sign_in">sign in</string>
     <string name="Send">send</string>
-    <string name="reply_label">Reply</string>
+    <string name="channel_id">10001</string>
+    <string name="chanel_name">channel name</string>
 </resources>
