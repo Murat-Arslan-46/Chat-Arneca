@@ -78,7 +78,8 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
                 }
             })
     }
-    fun notification(context: Context,message: EntityMessage){
+    @SuppressLint("UnspecifiedImmutableFlag")
+    fun notification(context: Context, message: EntityMessage){
         createNotificationChannel(context)
         val channelId = "${context.packageName}-${context.getString(R.string.app_name)}"
         val intent = Intent(context, MainActivity::class.java)

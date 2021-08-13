@@ -18,6 +18,8 @@ import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.chatdb.EntityChat
 import com.marslan.chatarneca.data.userdb.EntityUser
 import com.marslan.chatarneca.databinding.FragmentContactBinding
+import java.util.*
+import kotlin.collections.ArrayList
 
 class ContactFragment : Fragment() {
 
@@ -53,10 +55,10 @@ class ContactFragment : Fragment() {
         return binding.root
     }
     private fun openChat(id: String){
-        viewModel.getChatList().observe(requireActivity(),{ list ->
+        val list = viewModel.getChatList().value
             try {
                 var randID = (1..9999).random()
-                list.forEach {
+                list!!.forEach {
                     if(it.toID == id)
                         randID = it.chatID
                 }
@@ -68,6 +70,5 @@ class ContactFragment : Fragment() {
             }catch (e: Exception){
                 Log.d("","")
             }
-        })
     }
 }

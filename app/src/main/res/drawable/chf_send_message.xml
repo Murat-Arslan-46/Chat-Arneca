@@ -4,7 +4,7 @@
         android:startColor="@color/secondary_color"
         android:centerColor="@color/secondary_color"
         android:endColor="@color/secondary_color_dark"
-        android:angle="90"/>
+        android:angle="270"/>
     <corners
         android:bottomRightRadius="20dp"
         android:bottomLeftRadius="20dp"
