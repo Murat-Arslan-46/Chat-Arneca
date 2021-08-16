@@ -28,8 +28,11 @@ interface SharedDao {
     fun deleteChat(entityChat: EntityChat)
 
     @Query("update chatDB set isRead = :read, lastMessage = :msg , lastDate = :date where chatID in (:id)")
-    fun updateChat(read: Boolean, msg : String, date: String, id: Int)
+    fun updateChatLastMessage(read: Boolean, msg : String, date: String, id: Int)
 
     @Query("update chatDB set isRead = :read where chatID in (:id)")
     fun updateChatRead(read: Boolean, id: Int)
+
+    @Insert(entity = EntityChat::class,onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateChat(entityChat: EntityChat)
 }

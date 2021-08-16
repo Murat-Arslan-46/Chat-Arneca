@@ -21,10 +21,19 @@
         android:id="@+id/chatFragment"
         android:name="com.marslan.chatarneca.fragments.chat.ChatFragment"
         android:label="@string/app_name"
-        tools:layout="@layout/fragment_chat"/>
+        tools:layout="@layout/fragment_chat">
+        <action
+            android:id="@+id/action_chatFragment_to_chatInfoFragment"
+            app:destination="@id/chatInfoFragment" />
+    </fragment>
     <fragment
         android:id="@+id/contactFragment"
         android:name="com.marslan.chatarneca.fragments.contact.ContactFragment"
         android:label="new chat"
         tools:layout="@layout/fragment_contact"/>
+    <fragment
+        android:id="@+id/chatInfoFragment"
+        android:name="com.marslan.chatarneca.fragments.chat.ChatInfoFragment"
+        android:label="fragment_chat_info"
+        tools:layout="@layout/fragment_chat_info" />
 </navigation>

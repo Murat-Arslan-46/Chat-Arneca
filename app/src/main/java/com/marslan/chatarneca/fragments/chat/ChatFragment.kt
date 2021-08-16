@@ -2,10 +2,9 @@ package com.marslan.chatarneca.fragments.chat
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
@@ -66,7 +65,24 @@ class ChatFragment : Fragment() {
             adapter.notifyDataSetChanged()
             binding.chatMessageList.smoothScrollToPosition(binding.chatMessageList.adapter!!.itemCount)
         })
+        setHasOptionsMenu(true)
         return (binding.root)
+    }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.chat_menu, menu)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.info -> {
+                findNavController().navigate(R.id.action_chatFragment_to_chatInfoFragment)
+                true
+            }
+            R.id.delete -> {
+                Log.d("delete","chat")
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     @SuppressLint("SimpleDateFormat", "NotifyDataSetChanged")

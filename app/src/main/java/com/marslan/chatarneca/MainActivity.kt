@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModelProvider
@@ -30,13 +31,7 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.fragment) as NavHostFragment
         val navController = navHostFragment.navController
         val appBarConfiguration = AppBarConfiguration(navController.graph)
-        basicNotification()
         setupActionBarWithNavController(navController, appBarConfiguration)
     }
-    @SuppressLint("UnspecifiedImmutableFlag")
-    private fun basicNotification() {
-
-    }
-
 
 }

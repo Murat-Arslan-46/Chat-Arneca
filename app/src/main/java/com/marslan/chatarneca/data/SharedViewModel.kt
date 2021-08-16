@@ -131,4 +131,9 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     fun deleteChat(entityChat: EntityChat){
         viewModelScope.launch(Dispatchers.IO) { repository.deleteChat(entityChat) }
     }
+    fun updateChatName(entityChat: EntityChat){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateChatName(entityChat)
+        }
+    }
 }
