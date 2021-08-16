@@ -32,4 +32,8 @@ class SharedRepository(private val sharedDao: SharedDao) {
         sharedDao.updateChatRead(read,id)
     }
 
+    suspend fun deleteChat(entityChat: EntityChat){
+        sharedDao.deleteChat(entityChat)
+        sharedDao.deleteMessage(entityChat.chatID)
+    }
 }

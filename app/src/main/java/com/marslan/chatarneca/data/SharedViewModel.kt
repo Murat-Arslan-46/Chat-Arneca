@@ -128,4 +128,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
         }
     }
     fun getChatList() = readAllChat
+    fun deleteChat(entityChat: EntityChat){
+        viewModelScope.launch(Dispatchers.IO) { repository.deleteChat(entityChat) }
+    }
 }

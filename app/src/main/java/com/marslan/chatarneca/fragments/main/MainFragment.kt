@@ -27,7 +27,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainBinding.inflate(inflater, container, false)
-        adapter = MainAdapter (this::openChat)
+        adapter = MainAdapter (this::openChat,this::deleteChat)
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         val auth = viewModel.getAuth()
         binding.newChat.setOnClickListener {
@@ -62,5 +62,10 @@ class MainFragment : Fragment() {
     private fun openChat(chat: EntityChat){
         viewModel.setChat(chat)
         findNavController().navigate(R.id.action_mainFragment_to_chatFragment)
+    }
+
+    private fun deleteChat(index: Int):Boolean{
+        viewModel.deleteChat(adapter.currentList[index])
+        return true
     }
 }

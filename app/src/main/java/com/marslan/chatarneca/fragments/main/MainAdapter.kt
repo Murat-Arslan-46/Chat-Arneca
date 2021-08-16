@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +13,7 @@ import com.marslan.chatarneca.databinding.ItemChatListBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainAdapter(private val clickListener: (EntityChat) -> Unit ) :
+class MainAdapter(private val clickListener: (EntityChat) -> Unit ,private val longClickListener: (Int) -> Boolean) :
     ListAdapter<EntityChat, RecyclerView.ViewHolder>(ItemCallBack()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -22,13 +23,14 @@ class MainAdapter(private val clickListener: (EntityChat) -> Unit ) :
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as ChatViewHolder).bind(currentList[position], clickListener)
+        (holder as ChatViewHolder).bind(position, clickListener, longClickListener)
     }
 
     inner class ChatViewHolder(private val binding: ItemChatListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SimpleDateFormat")
-        fun bind(chat: EntityChat, clickListener: (EntityChat) -> Unit) {
+        fun bind(position: Int, clickListener: (EntityChat) -> Unit, longClickListener: (Int) -> Boolean) {
+            val chat = currentList[position]
             val sdf = SimpleDateFormat("dd/MM/yy HH:mm")
             val date = sdf.format(Date())
             val currentDate = date.split(" ")
@@ -45,6 +47,7 @@ class MainAdapter(private val clickListener: (EntityChat) -> Unit ) :
                 binding.chatText.setTypeface(null,Typeface.NORMAL)
             binding.chatName.text = chat.chatName
             binding.root.setOnClickListener { clickListener(chat) }
+            binding.root.setOnLongClickListener { longClickListener(position) }
         }
     }
     private class ItemCallBack: DiffUtil.ItemCallback<EntityChat>() {

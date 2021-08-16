@@ -17,6 +17,8 @@ import com.marslan.chatarneca.data.messagedb.EntityMessage
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.chatdb.EntityChat
 import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.Item
+import com.xwray.groupie.OnItemLongClickListener
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import java.text.SimpleDateFormat
 import java.util.*
@@ -43,13 +45,9 @@ class ChatFragment : Fragment() {
             .inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity())
             .get(SharedViewModel::class.java)
-        createFragment(viewModel.getDB(), viewModel.getAuth())
-        return (binding.root)
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun createFragment(db: FirebaseDatabase, auth: FirebaseAuth){
-        chat = viewModel.getChat()!!
+        val db = viewModel.getDB()
+        val auth = viewModel.getAuth()
+        chat = viewModel.getChat()
         binding.chatSendMessage.setOnClickListener {
             sendMessage(db,auth)
         }
@@ -68,7 +66,7 @@ class ChatFragment : Fragment() {
             adapter.notifyDataSetChanged()
             binding.chatMessageList.smoothScrollToPosition(binding.chatMessageList.adapter!!.itemCount)
         })
-
+        return (binding.root)
     }
 
     @SuppressLint("SimpleDateFormat", "NotifyDataSetChanged")
