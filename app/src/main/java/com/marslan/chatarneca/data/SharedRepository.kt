@@ -10,7 +10,7 @@ class SharedRepository(private val sharedDao: SharedDao) {
 
     suspend fun newMessage(entityMessage: EntityMessage){sharedDao.newMessage(entityMessage)}
 
-    fun deleteMessage(entityMessage: EntityMessage){sharedDao.deleteMessage(entityMessage)}
+    //fun deleteMessage(entityMessage: EntityMessage){sharedDao.deleteMessage(entityMessage)}
 
     suspend fun updateMessage(entityMessage: EntityMessage){sharedDao.updateMessage(entityMessage)}
 

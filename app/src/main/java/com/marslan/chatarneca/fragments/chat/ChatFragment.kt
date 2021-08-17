@@ -2,26 +2,18 @@ package com.marslan.chatarneca.fragments.chat
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
-import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.*
 import com.marslan.chatarneca.databinding.FragmentChatBinding
-import com.marslan.chatarneca.data.EntityMessage
-import com.marslan.chatarneca.data.SharedViewModel
-import com.marslan.chatarneca.data.EntityChat
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-
-
 
 
 class ChatFragment : Fragment() {
