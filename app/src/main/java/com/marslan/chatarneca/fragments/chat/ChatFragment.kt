@@ -12,12 +12,10 @@ import com.google.firebase.database.*
 import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.*
 import com.marslan.chatarneca.databinding.FragmentChatBinding
-import com.marslan.chatarneca.data.messagedb.EntityMessage
+import com.marslan.chatarneca.data.EntityMessage
 import com.marslan.chatarneca.data.SharedViewModel
-import com.marslan.chatarneca.data.chatdb.EntityChat
+import com.marslan.chatarneca.data.EntityChat
 import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.Item
-import com.xwray.groupie.OnItemLongClickListener
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,19 +38,16 @@ class ChatFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentChatBinding
-            .inflate(inflater, container, false)
-        viewModel = ViewModelProvider(requireActivity())
-            .get(SharedViewModel::class.java)
-        val db = viewModel.getDB()
+        binding = FragmentChatBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         val auth = viewModel.getAuth()
-        chat = viewModel.getChat()
+        chat = viewModel.getCurrentChat()
         binding.chatSendMessage.setOnClickListener {
-            sendMessage(db,auth)
+            sendMessage(auth)
         }
         binding.chatMessageList.adapter = adapter
         adapter.clear()
-        viewModel.getMessage(chat.chatID).observe(requireActivity(), { list ->
+        viewModel.getMessageWithChatID(chat.id).observe(requireActivity(), { list ->
             currentList = list as ArrayList<EntityMessage>
             adapter.clear()
             list.forEach {
@@ -60,6 +55,10 @@ class ChatFragment : Fragment() {
                     adapter.add(SendMessageItem(it))
                 } else {
                     adapter.add(ReceiveMessageItem(it))
+                }
+                if(!it.iSaw){
+                    it.iSaw = true
+                    viewModel.updateMessage(it)
                 }
             }
             adapter.notifyDataSetChanged()
@@ -86,23 +85,25 @@ class ChatFragment : Fragment() {
     }
 
     @SuppressLint("SimpleDateFormat", "NotifyDataSetChanged")
-    private fun sendMessage(db : FirebaseDatabase,auth: FirebaseAuth) {
-        val text = binding.chatInputText.text.toString()
-        binding.chatInputText.text.clear()
+    private fun sendMessage(auth: FirebaseAuth) {
+        val text : String
+        binding.chatInputText.text.apply {
+            text = this.toString()
+            clear()
+        }
         val fromID = auth.currentUser!!.uid
         val sdf = SimpleDateFormat("dd/MM/yy HH:mm")
         val date = sdf.format(Date())
         val id =
-            if(currentList.isEmpty())
-                chat.chatID*10000
+            if(currentList.size!=0)
+                (((currentList[currentList.size-1].id/10000)+1)*10000) + chat.id
             else
-                currentList[currentList.size-1].id+1
-        val message = EntityMessage(id,text,date,fromID,chat.chatID,false)
+                10000 + chat.id
+        val message = EntityMessage(id,text,date,fromID,chat.id)
         currentList.add(message)
-        db.getReference(chat.toID)
-            .push().setValue(message)
-        message.isRead = true
-        viewModel.newMessage(message,chat.toID)
+        viewModel.getFirebaseDatabase().getReference(chat.toRef).push().setValue(message)
+        message.iSaw = true
+        viewModel.newMessage(message)
         adapter.add(SendMessageItem(message))
         adapter.notifyDataSetChanged()
         binding.chatMessageList.smoothScrollToPosition(binding.chatMessageList.adapter!!.itemCount)

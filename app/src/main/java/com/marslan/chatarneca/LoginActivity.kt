@@ -15,11 +15,8 @@ import com.marslan.chatarneca.databinding.ActivityLoginBinding
 import android.view.animation.Animation
 
 import android.view.animation.AlphaAnimation
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
-import com.marslan.chatarneca.data.userdb.EntityUser
+import com.marslan.chatarneca.data.User
 
 
 class LoginActivity : AppCompatActivity() {
@@ -119,20 +116,20 @@ class LoginActivity : AppCompatActivity() {
             binding.loginPassword.text.toString()
         ).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val user = EntityUser(
+                    val user = User(
                         auth.uid.toString(),
                         "name",
                         binding.loginUserName.text.toString(),
                         "111-222-33-44"
                     )
-                    viewModel.getDB().getReference("users").get().addOnSuccessListener{
+                    viewModel.getFirebaseDatabase().getReference("users").get().addOnSuccessListener{
                         if(it.value != null){
-                            var value = it.getValue<ArrayList<EntityUser>>()
+                            var value = it.getValue<ArrayList<User>>()
                             if(value != null)
                                 value.add(user)
                             else
                                 value = arrayListOf(user)
-                            viewModel.getDB().getReference("users").setValue(value)
+                            viewModel.getFirebaseDatabase().getReference("users").setValue(value)
                         }
                     }
                      openApp()

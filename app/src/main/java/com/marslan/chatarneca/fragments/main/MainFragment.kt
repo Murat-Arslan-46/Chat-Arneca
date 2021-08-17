@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.marslan.chatarneca.LoginActivity
 import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.SharedViewModel
-import com.marslan.chatarneca.data.chatdb.EntityChat
+import com.marslan.chatarneca.data.EntityChat
 import com.marslan.chatarneca.databinding.FragmentMainBinding
 
 
@@ -22,14 +22,23 @@ class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private lateinit var viewModel: SharedViewModel
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainBinding.inflate(inflater, container, false)
-        adapter = MainAdapter (this::openChat,this::deleteChat)
+        adapter = MainAdapter (listOf(), listOf(),this::openChat,this::deleteChat)
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         val auth = viewModel.getAuth()
+        viewModel.getAllChatWithLastMessage().observe(viewLifecycleOwner,{
+            adapter.currentList = it
+            adapter.notifyDataSetChanged()
+        })
+        viewModel.getAllChat().observe(viewLifecycleOwner,{
+            adapter.chatList = it
+            adapter.notifyDataSetChanged()
+        })
         binding.newChat.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_contactFragment)
         }
@@ -43,29 +52,13 @@ class MainFragment : Fragment() {
         return (binding.root)
     }
 
-    override fun onResume() {
-        super.onResume()
-        update()
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun update(){
-        viewModel.getChatList().observe(requireActivity(), {
-            val list = it.sortedByDescending { chat ->
-                chat.lastDate
-            }
-            adapter.submitList(list)
-            adapter.notifyDataSetChanged()
-        })
-    }
-
     private fun openChat(chat: EntityChat){
-        viewModel.setChat(chat)
+        viewModel.setCurrentChat(chat)
         findNavController().navigate(R.id.action_mainFragment_to_chatFragment)
     }
 
-    private fun deleteChat(index: Int):Boolean{
-        viewModel.deleteChat(adapter.currentList[index])
+    private fun deleteChat(chat: EntityChat):Boolean{
+        viewModel.deleteChat(chat)
         return true
     }
 }

@@ -3,12 +3,11 @@ package com.marslan.chatarneca.fragments.contact
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.marslan.chatarneca.data.userdb.EntityUser
+import com.marslan.chatarneca.data.User
 import com.marslan.chatarneca.databinding.ItemChatListBinding
-import kotlin.collections.ArrayList
 
 class ContactAdapter (
-    var currentList: ArrayList<EntityUser>,
+    var currentList: List<User>,
     private val clickListener: (String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -23,7 +22,7 @@ class ContactAdapter (
 
     inner class ChatViewHolder(private val binding: ItemChatListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(user: EntityUser, clickListener: (String) -> Unit) {
+        fun bind(user: User, clickListener: (String) -> Unit) {
             binding.chatDate.text = ""
             binding.chatText.text = user.mail
             binding.chatName.text = user.name

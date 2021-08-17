@@ -1,7 +1,6 @@
 package com.marslan.chatarneca.data
 
 import com.marslan.chatarneca.R
-import com.marslan.chatarneca.data.messagedb.EntityMessage
 import com.marslan.chatarneca.databinding.ItemMessageReceiveBinding
 import com.marslan.chatarneca.databinding.ItemMessageSendBinding
 import com.xwray.groupie.databinding.BindableItem

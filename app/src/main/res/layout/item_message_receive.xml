@@ -6,7 +6,7 @@
     <data>
         <variable
             name="message"
-            type="com.marslan.chatarneca.data.messagedb.EntityMessage" />
+            type="com.marslan.chatarneca.data.EntityMessage" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

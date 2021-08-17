@@ -1,4 +1,4 @@
-package com.marslan.chatarneca.data.messagedb
+package com.marslan.chatarneca.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,5 +11,9 @@ data class EntityMessage(
     val date: String = "00/00/00 00:00",
     val fromID: String = "0",
     val chatID: Int = 1,
-    var isRead: Boolean = false
+    var iSaw: Boolean = false,
+    var seen: Boolean = false,
+    var seenList: String = "",
+    var send: Boolean = false,
+    var sendList: String = ""
 )

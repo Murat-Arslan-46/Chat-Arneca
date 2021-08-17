@@ -1,139 +1,91 @@
 package com.marslan.chatarneca.data
 
-import android.annotation.SuppressLint
 import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
-import android.os.Build
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import com.marslan.chatarneca.MainActivity
-import com.marslan.chatarneca.R
-import com.marslan.chatarneca.data.chatdb.EntityChat
-import com.marslan.chatarneca.data.messagedb.EntityMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class SharedViewModel(application: Application): AndroidViewModel(application) {
-    private val readAllChat: LiveData<List<EntityChat>>
     private val repository : SharedRepository
     private val auth : FirebaseAuth
     private val db : FirebaseDatabase
     private var chat : EntityChat
-
+    private var userIndex : Int
     init {
         val messageDao = SharedDatabase.getDatabase(application).messageDao()
-        repository = SharedRepository(messageDao)
-        readAllChat = repository.readAllChat
+        userIndex = -1
         auth = Firebase.auth
         db = Firebase.database
+        repository = SharedRepository(messageDao)
         chat = EntityChat()
     }
-    fun listenerOpen(context: Context){
-        getDB().getReference(auth.currentUser!!.uid)
-            .addChildEventListener(object: ChildEventListener {
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    if(snapshot.value != null) {
-                        val message = snapshot.getValue<EntityMessage>()
-                        if (message != null) {
-                            newMessage(message,message.fromID)
-                            getDB()
-                                .getReference(auth.currentUser!!.uid).removeValue()
-                            notification(context,message)
-                        }
+    fun getAuth() = auth
+    fun getFirebaseDatabase() = db
+    fun getUserIndex() = userIndex
+    fun setUserIndex(index: Int){userIndex = index}
+    fun getCurrentChat() = chat
+    fun setCurrentChat(newChat: EntityChat){ chat = newChat }
+    fun getMessageWithChatID(id: Int) = repository.getChatMessage(id)
+    fun getAllChatWithLastMessage() = repository.allChatWithLastMessage
+    fun newMessage(entityMessage: EntityMessage){
+        if(entityMessage.fromID == "-1"){
+            db.getReference("users")
+                .child(userIndex.toString())
+                .child("listenerRef").get().addOnSuccessListener {
+                    if(it.value != null){
+                        it.getValue<ArrayList<String>>()?.add(entityMessage.text)
                     }
                 }
-
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    Log.d("change data",";)")
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.d("cancel firebase",";)")
-                }
-
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    Log.d("moved child",";)")
-                }
-
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-                    Log.d("empty firebase",";)")
-                }
-            })
-    }
-    @SuppressLint("UnspecifiedImmutableFlag")
-    fun notification(context: Context, message: EntityMessage){
-        createNotificationChannel(context)
-        val channelId = "${context.packageName}-${context.getString(R.string.app_name)}"
-        val intent = Intent(context, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        val pendingIntent = PendingIntent.getActivity(context, 0, intent,0)
-        val notificationBuilder = NotificationCompat.Builder(context, channelId).apply {
-            setSmallIcon(R.drawable.ic_launcher_foreground)
-            setContentTitle(message.fromID)
-            setContentText(message.text)
-            setContentIntent(pendingIntent)
-            setStyle(NotificationCompat.BigTextStyle().bigText(message.text))
-            priority = NotificationCompat.PRIORITY_DEFAULT
-            setAutoCancel(true)
         }
-        val notificationManager = NotificationManagerCompat.from(context)
-        notificationManager.notify(1001, notificationBuilder.build())
-    }
-    @SuppressLint("WrongConstant")
-    fun createNotificationChannel(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                "${context.packageName}-${context.getString(R.string.app_name)}",
-                context.getString(R.string.app_name),
-                NotificationManagerCompat.IMPORTANCE_DEFAULT
-            )
-            channel.description = "App notification channel."
-            channel.setShowBadge(false)
-            val notificationManager = context.getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+        else if(entityMessage.fromID == auth.currentUser!!.uid){
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.newMessage(entityMessage)
+                val list = getAllChat().value
+                if(list == null)
+                    newChat(chat)
+                else if(list.filter { it.users == chat.users }.isEmpty())
+                    newChat(chat)
+            }
+        }
+        else{
+            viewModelScope.launch(Dispatchers.IO) {
+                repository.newMessage(entityMessage)
+                val users = "${entityMessage.fromID}%${auth.currentUser!!.uid}"
+                val randID = entityMessage.id%10000
+
+                val name = "chat"
+                var tempChat = EntityChat(randID, name, entityMessage.fromID, users)
+                val list = getAllChat().value
+                if(list == null)
+                    newChat(tempChat)
+                else if(list.filter { it.users == users }.isEmpty())
+                    newChat(tempChat)
+            }
         }
     }
-    fun getAuth() = auth
-    fun getDB() = db
-    fun getChat() = chat
-    fun setChat(newChat: EntityChat){ chat = newChat }
-    fun getMessage(id: Int) : LiveData<List<EntityMessage>> {
-        viewModelScope.launch(Dispatchers.IO) {
-            try{repository.updateChat(false,id)}
-            catch (e: Exception){Log.e("read fail", e.message.toString())}
-        }
-        return repository.getChatMessage(id)
+    fun updateMessage(entityMessage: EntityMessage){
+        viewModelScope.launch(Dispatchers.IO) { repository.updateMessage(entityMessage) }
     }
-    fun newMessage(entityMessage: EntityMessage,toID: String){
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.newMessage(entityMessage,toID)
-        }
+    fun getAllChat() = repository.readAllChat
+    fun newChat(entityChat: EntityChat){
+        viewModelScope.launch(Dispatchers.IO) { repository.newChat(entityChat) }
     }
-    fun getChatList() = readAllChat
     fun deleteChat(entityChat: EntityChat){
         viewModelScope.launch(Dispatchers.IO) { repository.deleteChat(entityChat) }
     }
-    fun updateChatName(entityChat: EntityChat){
+    fun updateChat(entityChat: EntityChat){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.updateChatName(entityChat)
+            repository.updateChat(entityChat)
         }
     }
 }

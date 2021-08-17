@@ -14,8 +14,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.marslan.chatarneca.data.SharedViewModel
-import com.marslan.chatarneca.data.chatdb.EntityChat
-import com.marslan.chatarneca.data.userdb.EntityUser
+import com.marslan.chatarneca.data.EntityChat
+import com.marslan.chatarneca.data.User
 import com.marslan.chatarneca.databinding.FragmentChatInfoBinding
 import com.marslan.chatarneca.fragments.contact.ContactAdapter
 
@@ -34,9 +34,9 @@ class ChatInfoFragment : Fragment() {
     ): View {
         binding = FragmentChatInfoBinding.inflate(inflater,container,false)
         viewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
-        chat = viewModel.getChat()
+        chat = viewModel.getCurrentChat()
         adapter = ContactAdapter(arrayListOf(),this::clickUser)
-        binding.chatInfoNameInput.setText(viewModel.getChat().chatName)
+        binding.chatInfoNameInput.setText(viewModel.getCurrentChat().chatName)
         binding.chatInfoChangeNameBtn.setOnClickListener { editName() }
         binding.chatInfoAddUserBtn.setOnClickListener {
             switch = binding.chatInfoAddUserBtn.isChecked
@@ -48,38 +48,48 @@ class ChatInfoFragment : Fragment() {
     }
     private fun editName(){
         chat.chatName = binding.chatInfoNameInput.text.toString()
-        viewModel.updateChatName(chat)
+        viewModel.updateChat(chat)
         Toast.makeText(requireContext(),"change name ${chat.chatName}",Toast.LENGTH_SHORT).show()
     }
     private fun update(){
-        viewModel.getDB().getReference("users").addListenerForSingleValueEvent(
+        viewModel.getFirebaseDatabase().getReference("users").addListenerForSingleValueEvent(
             object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {
                     Log.d("get failed","user list")
                 }
                 @SuppressLint("NotifyDataSetChanged")
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var temp = arrayListOf<EntityUser>()
-                    val toID = chat.toID.split("%")
-                    val users = arrayListOf<EntityUser>()
-                    if(snapshot.value != null)
-                        temp = snapshot.getValue<ArrayList<EntityUser>>()!!
-                    toID.forEach { id ->
-                        temp.forEach {
-                            if(!switch && it.id == id)
-                                users.add(it)
-                            else if(switch)
-                                users.add(it)
+                    var temp = arrayListOf<User>()
+                    val toID = chat.toRef.split("%")
+                    if(snapshot.value != null) {
+                        snapshot.getValue<ArrayList<User>>()?.let {
+                            temp = it
                         }
                     }
-                    adapter.currentList = users
+                    temp.filter { toID.contains(it.id).xor(switch) }.apply {
+                        adapter.currentList = this
+                    }
                     adapter.notifyDataSetChanged()
                 }
             }
         )
     }
-    private fun deleteUser(id: String) {}
-    private fun addUser(id: String) {}
+    private fun deleteUser(id: String) {
+        val toID = chat.users.split("%")
+        var temp = "%${viewModel.getAuth().currentUser!!.uid}"
+        toID.forEach {
+            if(it != id)
+                temp += "%$it"
+        }
+        chat.users = temp
+        viewModel.updateChat(chat)
+        Toast.makeText(requireContext(),"delete user $id",Toast.LENGTH_SHORT).show()
+    }
+    private fun addUser(id: String) {
+        chat.users += "%$id"
+        viewModel.updateChat(chat)
+        Toast.makeText(requireContext(),"add user $id",Toast.LENGTH_SHORT).show()
+    }
     private fun clickUser(id: String){
         if(switch)
             addUser(id)

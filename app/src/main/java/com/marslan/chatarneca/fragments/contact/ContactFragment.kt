@@ -15,10 +15,9 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.SharedViewModel
-import com.marslan.chatarneca.data.chatdb.EntityChat
-import com.marslan.chatarneca.data.userdb.EntityUser
+import com.marslan.chatarneca.data.EntityChat
+import com.marslan.chatarneca.data.User
 import com.marslan.chatarneca.databinding.FragmentContactBinding
-import java.util.*
 import kotlin.collections.ArrayList
 
 class ContactFragment : Fragment() {
@@ -35,8 +34,8 @@ class ContactFragment : Fragment() {
         super.onCreateView(inflater, container, savedInstanceState)
         binding = FragmentContactBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
-        var users = arrayListOf<EntityUser>()
-        viewModel.getDB().getReference("users").addListenerForSingleValueEvent(
+        adapter = ContactAdapter(arrayListOf(),this::openChat)
+        viewModel.getFirebaseDatabase().getReference("users").addListenerForSingleValueEvent(
             object : ValueEventListener{
                 override fun onCancelled(error: DatabaseError) {
                     Log.d("get failed","user list")
@@ -44,31 +43,33 @@ class ContactFragment : Fragment() {
                 @SuppressLint("NotifyDataSetChanged")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value != null)
-                        users = snapshot.getValue<ArrayList<EntityUser>>()!!
-                    adapter.currentList = users
-                    adapter.notifyDataSetChanged()
+                        snapshot.getValue<ArrayList<User>>()?.apply {
+                            val temp = arrayListOf<User>()
+                            this.forEach {
+                                if(it.id != viewModel.getAuth().currentUser!!.uid)
+                                    temp.add(it)
+                            }
+                            adapter.currentList = temp
+                            adapter.notifyDataSetChanged()
+                        }
                 }
             }
         )
-        adapter = ContactAdapter(users,this::openChat)
         binding.userList.adapter = adapter
         return binding.root
     }
-    private fun openChat(id: String){
-        val list = viewModel.getChatList().value
-            try {
-                var randID = (1..9999).random()
-                list!!.forEach {
-                    if(it.toID == id)
-                        randID = it.chatID
-                }
-                val name = "chat"
-                val chat = EntityChat(randID,name,id)
-                viewModel.setChat(chat)
-                findNavController().navigateUp()
-                findNavController().navigate(R.id.action_mainFragment_to_chatFragment)
-            }catch (e: Exception){
-                Log.d("","")
-            }
+    private fun openChat(toRef: String) {
+        val users = "${viewModel.getAuth().currentUser!!.uid}%$toRef"
+        val randID = (1000..9999).random()
+        val name = "chat"
+        var chat = EntityChat(randID, name, toRef, users)
+        viewModel.getAllChat().value?.forEach {
+            val list = it.users.split("%")
+            if (list[0] == toRef || list[1] == toRef)
+                chat = it
+        }
+        viewModel.setCurrentChat(chat)
+        findNavController().navigateUp()
+        findNavController().navigate(R.id.action_mainFragment_to_chatFragment)
     }
 }
