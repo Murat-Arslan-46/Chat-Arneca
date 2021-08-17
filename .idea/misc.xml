@@ -13,6 +13,9 @@
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/chf_receive_message.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/chf_send_message.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/delete.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_new_chat.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_new_group.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_sign_out.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/info.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/login_background.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/mf_button.xml" value="0.202734375" />
@@ -35,6 +38,7 @@
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/main_activity.xml" value="0.2" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/main_fragment.xml" value="0.24010416666666667" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/menu/chat_menu.xml" value="0.190625" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/menu/main_menu.xml" value="0.190625" />
       </map>
     </option>
   </component>

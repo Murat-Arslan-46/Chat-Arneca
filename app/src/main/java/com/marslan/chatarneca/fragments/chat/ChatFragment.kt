@@ -66,7 +66,7 @@ class ChatFragment : Fragment() {
         })
         setHasOptionsMenu(true)
         return (binding.root)
-    }
+    }/*
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.chat_menu, menu)
     }
@@ -83,7 +83,7 @@ class ChatFragment : Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
+*/
     @SuppressLint("SimpleDateFormat", "NotifyDataSetChanged")
     private fun sendMessage(auth: FirebaseAuth) {
         val text : String
