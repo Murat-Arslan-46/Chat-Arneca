@@ -9,6 +9,9 @@ interface SharedDao {
     @Insert(entity = EntityMessage::class,onConflict = OnConflictStrategy.IGNORE)
     suspend fun newMessage(entityMessage : EntityMessage)
 
+    @Query("select sendList from messageDB where id in (:id)")
+    fun getMessageSendList(id: Int) : List<String>
+
     @Query("select * from messageDB where chatID in (:mid)")
     fun getChatMessage(mid: Int) : LiveData<List<EntityMessage>>
 
@@ -29,6 +32,9 @@ interface SharedDao {
 
     @Query("select * from chatDB ")
     fun getChat() : LiveData<List<EntityChat>>
+
+    @Query("select * from chatDB where id = :id ")
+    fun getSingleChat(id: Int) : List<EntityChat>
 
     @Delete(entity = EntityChat::class)
     fun deleteChat(entityChat: EntityChat)

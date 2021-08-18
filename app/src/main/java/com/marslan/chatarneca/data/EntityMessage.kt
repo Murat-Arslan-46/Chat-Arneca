@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey
 data class EntityMessage(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 1,
-    val text: String = "",
+    var text: String = "",
     val date: String = "00/00/00 00:00",
-    val fromID: String = "0",
+    var fromID: String = "0",
     val chatID: Int = 1,
     var iSaw: Boolean = false,
     var seen: Boolean = false,

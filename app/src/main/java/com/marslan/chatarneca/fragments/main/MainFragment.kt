@@ -57,10 +57,12 @@ class MainFragment : Fragment() {
                 true
             }
             R.id.main_menu_new_chat -> {
+                viewModel.setGroupFlag(false)
                 findNavController().navigate(R.id.action_mainFragment_to_contactFragment)
                 true
             }
             R.id.main_menu_new_group -> {
+                viewModel.setGroupFlag(true)
                 findNavController().navigate(R.id.action_mainFragment_to_contactFragment)
                 true
             }

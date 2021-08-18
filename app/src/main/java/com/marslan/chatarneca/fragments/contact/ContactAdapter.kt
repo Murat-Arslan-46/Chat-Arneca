@@ -1,5 +1,7 @@
 package com.marslan.chatarneca.fragments.contact
 
+import android.graphics.Typeface
+import android.graphics.Typeface.*
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +28,13 @@ class ContactAdapter (
             binding.chatDate.text = ""
             binding.chatText.text = user.mail
             binding.chatName.text = user.name
-            binding.root.setOnClickListener { clickListener(user.id) }
+            binding.root.setOnClickListener {
+                if(binding.chatName.typeface.isBold)
+                    binding.chatName.typeface = DEFAULT
+                else
+                    binding.chatName.typeface = DEFAULT_BOLD
+                clickListener(user.id)
+            }
         }
     }
 

@@ -17,6 +17,7 @@
         android:background="@drawable/chf_input"
         android:hint="hi!"
         android:padding="16dp"
+        android:maxHeight="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/chat_send_message"
         app:layout_constraintStart_toStartOf="parent"

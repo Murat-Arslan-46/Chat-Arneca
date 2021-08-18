@@ -120,7 +120,8 @@ class LoginActivity : AppCompatActivity() {
                         auth.uid.toString(),
                         "name",
                         binding.loginUserName.text.toString(),
-                        "111-222-33-44"
+                        "111-222-33-44",
+                        arrayListOf(auth.uid.toString())
                     )
                     viewModel.getFirebaseDatabase().getReference("users").get().addOnSuccessListener{
                         if(it.value != null){
@@ -130,6 +131,9 @@ class LoginActivity : AppCompatActivity() {
                             else
                                 value = arrayListOf(user)
                             viewModel.getFirebaseDatabase().getReference("users").setValue(value)
+                        }
+                        else{
+                            viewModel.getFirebaseDatabase().getReference("users").setValue(arrayListOf(user))
                         }
                     }
                      openApp()

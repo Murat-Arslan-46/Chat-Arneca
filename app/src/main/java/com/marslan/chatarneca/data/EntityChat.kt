@@ -10,5 +10,5 @@ data class EntityChat(
     var chatName: String = "chat",
     val toRef: String = "null",
     var users: String = "null",
-    var manager: String = "null"
+    var manager: Boolean = false
 )

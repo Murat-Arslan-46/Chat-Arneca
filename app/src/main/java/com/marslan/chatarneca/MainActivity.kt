@@ -31,18 +31,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         viewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
-        viewModel.getFirebaseDatabase().getReference(viewModel.getAuth().currentUser!!.uid)
-            .addChildEventListener(listener())
         viewModel.getFirebaseDatabase().getReference("users").get().addOnSuccessListener {
             if(it != null){
                 it.getValue<List<User>>()?.forEachIndexed { index , user->
-                    if(user.id == viewModel.getAuth().currentUser!!.uid){
-                        viewModel.setUserIndex(index)
-                        user.listenerRef.forEach { ref ->
-                            viewModel.getFirebaseDatabase().getReference(ref)
-                                .addChildEventListener(listener())
+                    try{
+                        if (user.id == viewModel.getAuth().currentUser!!.uid) {
+                            viewModel.setUserIndex(index)
+                            user.listenerRef.forEach { ref ->
+                                viewModel.getFirebaseDatabase().getReference(ref)
+                                    .addChildEventListener(listener())
+                            }
                         }
-                    }
+                    }catch (e: Exception){}
                 }
             }
         }
@@ -92,9 +92,26 @@ class MainActivity : AppCompatActivity() {
                     val message = snapshot.getValue<EntityMessage>()
                     if (message != null) {
                         viewModel.newMessage(message)
-                        notification(message)
-                        viewModel.getFirebaseDatabase()
-                            .getReference(viewModel.getAuth().currentUser!!.uid).removeValue()
+                        if(message.fromID == "-1") //system message
+                        {
+                            viewModel.getFirebaseDatabase()
+                                .getReference(viewModel.getAuth().currentUser!!.uid)
+                                .removeValue()
+                            if(message.text != "send_success" && message.text != "seen_success") {
+                                viewModel.getFirebaseDatabase()
+                                    .getReference(message.text).addChildEventListener(listener())
+                            }
+                        }
+                        else {
+                            notification(message)
+                            val ref = message.fromID
+                            message.sendList = viewModel.getAuth().currentUser!!.uid
+                            message.fromID = "-1"
+                            message.text = "send_success"
+                            viewModel.getFirebaseDatabase()
+                                .getReference(ref).push()
+                                .setValue(message)
+                        }
                     }
                 }
             }
