@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Chat Arneca</string>
+    <string name="app_name">Chat App</string>
     <string name="login_username">username</string>
     <string name="password">password</string>
     <string name="new_account">new account</string>
@@ -14,4 +14,6 @@
     <string name="new_group">new group</string>
     <string name="profile">profile</string>
     <string name="setting">setting</string>
+    <string name="phone">phone</string>
+    <string name="mail">mail</string>
 </resources>

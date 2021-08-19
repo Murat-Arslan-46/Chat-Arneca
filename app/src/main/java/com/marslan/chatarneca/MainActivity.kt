@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                                     .getReference(message.text).addChildEventListener(listener())
                             }
                         }
-                        else {
+                        else if(message.fromID != viewModel.getAuth().currentUser!!.uid) {
                             notification(message)
                             val ref = message.fromID
                             message.sendList = viewModel.getAuth().currentUser!!.uid

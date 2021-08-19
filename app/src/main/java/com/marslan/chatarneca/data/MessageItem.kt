@@ -1,5 +1,6 @@
 package com.marslan.chatarneca.data
 
+import android.view.View
 import com.marslan.chatarneca.R
 import com.marslan.chatarneca.databinding.ItemMessageReceiveBinding
 import com.marslan.chatarneca.databinding.ItemMessageSendBinding
@@ -12,6 +13,8 @@ class SendMessageItem(private val message: EntityMessage) : BindableItem<ItemMes
 
     override fun bind(viewBinding: ItemMessageSendBinding, position: Int) {
         viewBinding.message = message
+        if(message.send)
+            viewBinding.imageView.visibility = View.VISIBLE
     }
 }
 

@@ -32,7 +32,6 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     fun getFirebaseDatabase() = db
     fun getGroupFlag() = newGroupFlag
     fun setGroupFlag(flag: Boolean) {newGroupFlag = flag}
-    fun getUserIndex() = userIndex
     fun setUserIndex(index: Int){userIndex = index}
     fun getCurrentChat() = chat
     fun setCurrentChat(newChat: EntityChat){ chat = newChat }
@@ -45,16 +44,18 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
                     "send_success"->{
                         viewModelScope.launch(Dispatchers.IO) {
                             val currentChat = repository.readSingleChat(entityMessage.chatID)[0]
-                            val currentMessage = repository.getMessage(entityMessage.id)[0]
-                            val userSize = currentChat.users.split("%").size
-                            currentMessage.sendList += "%${entityMessage.sendList}"
-                            val sendSize = currentMessage.sendList.split("%").size
-                            if(sendSize+1 == userSize){
-                                db.getReference(currentChat.toRef).child(entityMessage.ref).setValue(null)
-                                currentMessage.send = true
+                            repository.getMessage(entityMessage.id).apply {
+                                val currentMessage = this[0]
+                                val userSize = currentChat.users.split("%").size
+                                if(currentMessage.sendList.split("%").none{it == entityMessage.sendList})
+                                    currentMessage.sendList += "%${entityMessage.sendList}"
+                                val sendSize = currentMessage.sendList.split("%").size
+                                if(sendSize == userSize){
+                                    db.getReference(currentChat.toRef).child(entityMessage.ref).setValue(null)
+                                    currentMessage.send = true
+                                }
+                                repository.updateMessage(currentMessage)
                             }
-                            repository.updateMessage(currentMessage)
-
                         }
                     }
                     "seen_success"->{
@@ -99,14 +100,14 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
                     val message = entityMessage.copy()
                     message.fromID = repository.getUser(entityMessage.fromID)[0].name
                     repository.newMessage(message)
-                }
-                val list = getAllChat().value
-                if(list == null || list.none { it.id == entityMessage.chatID }) {
-                    val users = "${entityMessage.fromID}%${auth.currentUser!!.uid}"
-                    val randID = entityMessage.chatID
-                    val name = entityMessage.fromID
-                    val tempChat = EntityChat(randID, name, entityMessage.fromID, users)
-                    newChat(tempChat)
+                    val list = getAllChat().value
+                    if(list == null || list.none { it.id == entityMessage.chatID }) {
+                        val users = "${entityMessage.fromID}%${auth.currentUser!!.uid}"
+                        val randID = entityMessage.chatID
+                        val name = message.fromID
+                        val tempChat = EntityChat(randID, name, entityMessage.fromID, users)
+                        newChat(tempChat)
+                    }
                 }
             } // new message receive
         }
@@ -119,8 +120,6 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) { repository.newChat(entityChat) }
     }
 
-    fun getSingleChat(id: Int) = repository.readSingleChat(id)
-
     fun deleteChat(entityChat: EntityChat){
         viewModelScope.launch(Dispatchers.IO) { repository.deleteChat(entityChat) }
     }
@@ -130,9 +129,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun newUser(user: EntityUser){
-        viewModelScope.launch(Dispatchers.IO) { repository.newUser(user) }
-    }
+    //fun newUser(user: EntityUser){viewModelScope.launch(Dispatchers.IO) { repository.newUser(user) }}
     fun updateUser(user: EntityUser){
         viewModelScope.launch(Dispatchers.IO) { repository.updateUser(user) }
     }

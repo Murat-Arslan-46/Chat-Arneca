@@ -96,10 +96,6 @@ class ChatFragment : Fragment() {
         val key = viewModel.getFirebaseDatabase().getReference(chat.toRef).push().key
         message.ref = key.toString()
         viewModel.getFirebaseDatabase().getReference(chat.toRef).child(key.toString()).setValue(message)
-        message.iSaw = true
         viewModel.newMessage(message)
-        adapter.add(SendMessageItem(message))
-        adapter.notifyDataSetChanged()
-        binding.chatMessageList.smoothScrollToPosition(binding.chatMessageList.adapter!!.itemCount)
     }
 }

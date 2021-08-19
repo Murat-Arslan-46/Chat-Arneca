@@ -86,7 +86,7 @@ class ContactFragment : Fragment() {
         var chat = EntityChat(randID, name, toRef, users)
         viewModel.getAllChat().value?.forEach {
             val list = it.users.split("%")
-            if (list[0] == toRef || list[1] == toRef)
+            if (list.size <=2 && (list[0] == toRef || list[1] == toRef))
                 chat = it
         }
         viewModel.setCurrentChat(chat)
