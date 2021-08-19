@@ -29,4 +29,10 @@ class SharedRepository(private val sharedDao: SharedDao) {
     }
 
     suspend fun updateChat(entityChat: EntityChat){sharedDao.updateChat(entityChat)}
+
+    suspend fun newUser(entityUser: EntityUser){sharedDao.newUser(entityUser)}
+    suspend fun deleteUser(entityUser: EntityUser){sharedDao.deleteUser(entityUser)}
+    suspend fun updateUser(user: EntityUser){sharedDao.updateUser(user)}
+    val getUsers : LiveData<List<EntityUser>> = sharedDao.getUsers()
+    fun getUser(id: String) = sharedDao.getUser(id)
 }

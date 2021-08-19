@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.getValue
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.EntityMessage
+import com.marslan.chatarneca.data.EntityUser
 import com.marslan.chatarneca.data.User
 
 class MainActivity : AppCompatActivity() {
@@ -42,6 +43,12 @@ class MainActivity : AppCompatActivity() {
                                     .addChildEventListener(listener())
                             }
                         }
+                        viewModel.updateUser(EntityUser(
+                            user.id,
+                            user.name,
+                            user.mail,
+                            user.phone
+                        ))
                     }catch (e: Exception){}
                 }
             }

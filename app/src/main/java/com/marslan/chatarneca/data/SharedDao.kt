@@ -41,4 +41,20 @@ interface SharedDao {
 
     @Insert(entity = EntityChat::class,onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateChat(entityChat: EntityChat)
+
+    @Insert(entity = EntityUser::class, onConflict = OnConflictStrategy.IGNORE)
+    suspend fun newUser(entityUser: EntityUser)
+
+    @Insert(entity = EntityUser::class, onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateUser(entityUser: EntityUser)
+
+    @Delete(entity = EntityUser::class)
+    suspend fun deleteUser(entityUser: EntityUser)
+
+    @Query("select * from UserDB")
+    fun getUsers() : LiveData<List<EntityUser>>
+
+    @Query("select * from UserDB where id = :id")
+    fun getUser(id: String) : List<EntityUser>
+
 }

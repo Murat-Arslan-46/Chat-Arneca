@@ -96,7 +96,9 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
             } // new message send
             else -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    repository.newMessage(entityMessage)
+                    val message = entityMessage.copy()
+                    message.fromID = repository.getUser(entityMessage.fromID)[0].name
+                    repository.newMessage(message)
                 }
                 val list = getAllChat().value
                 if(list == null || list.none { it.id == entityMessage.chatID }) {
@@ -126,5 +128,12 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.updateChat(entityChat)
         }
+    }
+
+    fun newUser(user: EntityUser){
+        viewModelScope.launch(Dispatchers.IO) { repository.newUser(user) }
+    }
+    fun updateUser(user: EntityUser){
+        viewModelScope.launch(Dispatchers.IO) { repository.updateUser(user) }
     }
 }
