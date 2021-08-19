@@ -93,7 +93,9 @@ class ChatFragment : Fragment() {
                 10000 + chat.id
         val message = EntityMessage(id,text,date,fromID,chat.id)
         currentList.add(message)
-        viewModel.getFirebaseDatabase().getReference(chat.toRef).push().setValue(message)
+        val key = viewModel.getFirebaseDatabase().getReference(chat.toRef).push().key
+        message.ref = key.toString()
+        viewModel.getFirebaseDatabase().getReference(chat.toRef).child(key.toString()).setValue(message)
         message.iSaw = true
         viewModel.newMessage(message)
         adapter.add(SendMessageItem(message))

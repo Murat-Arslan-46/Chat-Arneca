@@ -120,9 +120,12 @@ class ContactFragment : Fragment() {
                 viewModel.getFirebaseDatabase()
                     .getReference(it).push().setValue(EntityMessage(
                         text = randID.toString(),
-                        fromID = "-1"
+                        fromID = "-1",
+                        sendList = userList,
+                        chatID = randID
                     ))
             }
+            chat.manager = true
         }
         viewModel.setCurrentChat(chat)
         findNavController().navigateUp()

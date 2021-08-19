@@ -10,9 +10,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class SharedViewModel(application: Application): AndroidViewModel(application) {
     private val repository : SharedRepository
@@ -43,20 +41,21 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     fun newMessage(entityMessage: EntityMessage){
         when (entityMessage.fromID) {
             "-1" -> {
-                var tempChat = try{
-                    getSingleChat(entityMessage.chatID)[0]
-                } catch (e: Exception){
-                    EntityChat(
-                        entityMessage.chatID,
-                        entityMessage.seenList,
-                        entityMessage.text,
-                        entityMessage.date,
-                    )
-                }
                 when(entityMessage.text){
                     "send_success"->{
-                        var list = repository.getMessageSendList(entityMessage.id)[0]
-                        list += "%${entityMessage.sendList}"
+                        viewModelScope.launch(Dispatchers.IO) {
+                            val currentChat = repository.readSingleChat(entityMessage.chatID)[0]
+                            val currentMessage = repository.getMessage(entityMessage.id)[0]
+                            val userSize = currentChat.users.split("%").size
+                            currentMessage.sendList += "%${entityMessage.sendList}"
+                            val sendSize = currentMessage.sendList.split("%").size
+                            if(sendSize+1 == userSize){
+                                db.getReference(currentChat.toRef).child(entityMessage.ref).setValue(null)
+                                currentMessage.send = true
+                            }
+                            repository.updateMessage(currentMessage)
+
+                        }
                     }
                     "seen_success"->{
 
@@ -74,6 +73,14 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
                                 ref.setValue(list)
                             }
                         }
+                        newChat(
+                            EntityChat(
+                            entityMessage.chatID,
+                            "group chat",
+                            entityMessage.chatID.toString(),
+                            entityMessage.sendList
+                        )
+                        )
                     }
                 }
             } // system message
@@ -90,15 +97,14 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
             else -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     repository.newMessage(entityMessage)
+                }
+                val list = getAllChat().value
+                if(list == null || list.none { it.id == entityMessage.chatID }) {
                     val users = "${entityMessage.fromID}%${auth.currentUser!!.uid}"
                     val randID = entityMessage.chatID
                     val name = entityMessage.fromID
                     val tempChat = EntityChat(randID, name, entityMessage.fromID, users)
-                    val list = getAllChat().value
-                    if(list == null)
-                        newChat(tempChat)
-                    else if(list.none { it.id == randID })
-                        newChat(tempChat)
+                    newChat(tempChat)
                 }
             } // new message receive
         }

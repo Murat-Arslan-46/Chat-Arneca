@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 
 class SharedRepository(private val sharedDao: SharedDao) {
 
-    fun getMessageSendList(id: Int) = sharedDao.getMessageSendList(id)
+    fun getMessage(id: Int) = sharedDao.getMessage(id)
 
     fun getChatMessage(id : Int) : LiveData<List<EntityMessage>> = sharedDao.getChatMessage(id)
 

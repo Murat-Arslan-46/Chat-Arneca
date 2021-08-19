@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                         {
                             viewModel.getFirebaseDatabase()
                                 .getReference(viewModel.getAuth().currentUser!!.uid)
-                                .removeValue()
+                                .setValue(null)
                             if(message.text != "send_success" && message.text != "seen_success") {
                                 viewModel.getFirebaseDatabase()
                                     .getReference(message.text).addChildEventListener(listener())

@@ -15,5 +15,6 @@ data class EntityMessage(
     var seen: Boolean = false,
     var seenList: String = "",
     var send: Boolean = false,
-    var sendList: String = ""
+    var sendList: String = "",
+    var ref: String = ""
 )
