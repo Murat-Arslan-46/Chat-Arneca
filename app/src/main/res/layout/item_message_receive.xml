@@ -15,7 +15,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/receive_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/chf_send_message"
@@ -24,15 +24,15 @@
             android:text="@{message.text}"
             android:textColor="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2"
+            app:layout_constraintTop_toBottomOf="@+id/receive_from_text"
             tools:text="null" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/receive_from_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{message.fromID}"
-            app:layout_constraintStart_toStartOf="@+id/textView3"
+            app:layout_constraintStart_toStartOf="@+id/receive_message"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

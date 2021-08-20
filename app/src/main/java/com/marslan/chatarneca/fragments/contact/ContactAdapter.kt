@@ -1,6 +1,5 @@
 package com.marslan.chatarneca.fragments.contact
 
-import android.graphics.Typeface
 import android.graphics.Typeface.*
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -15,14 +14,14 @@ class ContactAdapter (
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflate = LayoutInflater.from(parent.context)
         val binding = ItemChatListBinding.inflate(inflate, parent, false)
-        return ChatViewHolder(binding)
+        return ContactViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder as ChatViewHolder).bind(currentList[position], clickListener)
+        (holder as ContactViewHolder).bind(currentList[position], clickListener)
     }
 
-    inner class ChatViewHolder(private val binding: ItemChatListBinding) :
+    inner class ContactViewHolder(private val binding: ItemChatListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(user: User, clickListener: (String) -> Unit) {
             binding.chatDate.text = ""

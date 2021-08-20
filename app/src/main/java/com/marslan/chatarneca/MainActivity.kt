@@ -172,7 +172,11 @@ class MainActivity : AppCompatActivity() {
     private fun listenerStatus():ChildEventListener{
         return object: ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                Log.d("add child",";)")
+                if(snapshot.value != null){
+                    val ref = snapshot.key.toString()
+                    val count = snapshot.childrenCount.toInt()
+                    viewModel.checkMessageSend(ref,count)
+                }
             }
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 if(snapshot.value != null){
@@ -180,7 +184,6 @@ class MainActivity : AppCompatActivity() {
                     val count = snapshot.childrenCount.toInt()
                     viewModel.checkMessageSend(ref,count)
                 }
-
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.d("cancel firebase",";)")
