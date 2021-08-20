@@ -119,9 +119,8 @@ class ContactFragment : Fragment() {
             users.forEach {
                 viewModel.getFirebaseDatabase()
                     .getReference(it).push().setValue(EntityMessage(
-                        text = randID.toString(),
+                        text = userList,
                         fromID = "-1",
-                        sendList = userList,
                         chatID = randID
                     ))
             }

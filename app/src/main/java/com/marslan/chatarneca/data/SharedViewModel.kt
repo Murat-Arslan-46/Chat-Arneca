@@ -35,55 +35,66 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     fun setUserIndex(index: Int){userIndex = index}
     fun getCurrentChat() = chat
     fun setCurrentChat(newChat: EntityChat){ chat = newChat }
+    fun getAllMessage() = repository.readAllMessage
+    fun checkMessageSend(ref: String, count: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val list = repository.getMessage(ref)
+            if(list.isNotEmpty()) {
+                val message = repository.getMessage(ref)[0]
+                val currentChat = repository.readSingleChat(message.chatID)[0]
+                if (currentChat.users.split("%").size == count + 1) {
+                    message.send = true
+                    updateMessage(message)
+                    db.getReference("${message.chatID}-${message.fromID}")
+                        .child(message.ref)
+                        .setValue(null)
+                    db.getReference(message.chatID.toString())
+                        .child(message.ref)
+                        .setValue(null)
+                }
+            }
+        }
+    }
     fun getMessageWithChatID(id: Int) = repository.getChatMessage(id)
     fun getAllChatWithLastMessage() = repository.allChatWithLastMessage
+    fun checkMessageIsNew(message: EntityMessage){
+        viewModelScope.launch(Dispatchers.IO) {
+            val list = repository.getMessage(message.ref)
+            if (message.fromID != auth.uid) {
+                message.send = true
+                newMessage(message)
+                val ref = "${message.chatID}-${message.fromID}"
+                if(list.isEmpty())
+                db.getReference(ref)
+                    .child(message.ref)
+                    .push().setValue(auth.currentUser!!.uid)
+            }
+        }
+
+    }
     fun newMessage(entityMessage: EntityMessage){
         when (entityMessage.fromID) {
             "-1" -> {
-                when(entityMessage.text){
-                    "send_success"->{
-                        viewModelScope.launch(Dispatchers.IO) {
-                            val currentChat = repository.readSingleChat(entityMessage.chatID)[0]
-                            repository.getMessage(entityMessage.id).apply {
-                                val currentMessage = this[0]
-                                val userSize = currentChat.users.split("%").size
-                                if(currentMessage.sendList.split("%").none{it == entityMessage.sendList})
-                                    currentMessage.sendList += "%${entityMessage.sendList}"
-                                val sendSize = currentMessage.sendList.split("%").size
-                                if(sendSize == userSize){
-                                    db.getReference(currentChat.toRef).child(entityMessage.ref).setValue(null)
-                                    currentMessage.send = true
-                                }
-                                repository.updateMessage(currentMessage)
-                            }
-                        }
-                    }
-                    "seen_success"->{
-
-                    }
-                    else ->{
-                        val ref =db.getReference("users")
-                            .child(userIndex.toString())
-                            .child("listenerRef")
-                        ref.get().addOnSuccessListener {
-                            if(it.value != null){
-                                var list = arrayListOf<String>()
-                                    if(it.getValue<ArrayList<String>>() != null)
-                                        list = it.getValue<ArrayList<String>>()!!
-                                list.add(entityMessage.text)
-                                ref.setValue(list)
-                            }
-                        }
-                        newChat(
-                            EntityChat(
-                            entityMessage.chatID,
-                            "group chat",
-                            entityMessage.chatID.toString(),
-                            entityMessage.sendList
-                        )
-                        )
+                val ref =db.getReference("users")
+                    .child(userIndex.toString())
+                    .child("listenerRef")
+                ref.get().addOnSuccessListener {
+                    if(it.value != null){
+                        var list = arrayListOf<String>()
+                            if(it.getValue<ArrayList<String>>() != null)
+                                list = it.getValue<ArrayList<String>>()!!
+                        list.add(entityMessage.chatID.toString())
+                        ref.setValue(list)
                     }
                 }
+                newChat(
+                    EntityChat(
+                        entityMessage.chatID,
+                        "group chat",
+                        entityMessage.chatID.toString(),
+                        entityMessage.text
+                    )
+                )
             } // system message
             auth.currentUser!!.uid -> {
                 viewModelScope.launch(Dispatchers.IO) {

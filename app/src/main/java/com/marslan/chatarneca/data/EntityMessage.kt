@@ -13,8 +13,6 @@ data class EntityMessage(
     val chatID: Int = 1,
     var iSaw: Boolean = false,
     var seen: Boolean = false,
-    var seenList: String = "",
     var send: Boolean = false,
-    var sendList: String = "",
     var ref: String = ""
 )

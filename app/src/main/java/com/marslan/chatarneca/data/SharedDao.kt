@@ -9,8 +9,11 @@ interface SharedDao {
     @Insert(entity = EntityMessage::class,onConflict = OnConflictStrategy.IGNORE)
     suspend fun newMessage(entityMessage : EntityMessage)
 
-    @Query("select * from messageDB where id in (:id)")
-    fun getMessage(id: Int) : List<EntityMessage>
+    @Query("select * from messageDB where ref  = :ref")
+    suspend fun getMessage(ref: String) : List<EntityMessage>
+
+    @Query("select * from messageDB")
+    fun getAllMessage() : LiveData<List<EntityMessage>>
 
     @Query("select * from messageDB where chatID in (:mid)")
     fun getChatMessage(mid: Int) : LiveData<List<EntityMessage>>

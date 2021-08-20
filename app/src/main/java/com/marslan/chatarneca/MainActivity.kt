@@ -32,27 +32,43 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         viewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
-        viewModel.getFirebaseDatabase().getReference("users").get().addOnSuccessListener {
+        viewModel.getFirebaseDatabase().getReference("users")
+            .get().addOnSuccessListener {
             if(it != null){
                 it.getValue<List<User>>()?.forEachIndexed { index , user->
-                    try{
-                        if (user.id == viewModel.getAuth().currentUser!!.uid) {
-                            viewModel.setUserIndex(index)
-                            user.listenerRef.forEach { ref ->
+                    if (user.id == viewModel.getAuth().currentUser!!.uid) {
+                        viewModel.setUserIndex(index)
+                        user.listenerRef.forEachIndexed { i,ref ->
+                            if(i == 0)
+                                viewModel.getFirebaseDatabase().getReference(ref)
+                                    .addChildEventListener(listenerMyRef())
+                            else
                                 viewModel.getFirebaseDatabase().getReference(ref)
                                     .addChildEventListener(listener())
-                            }
                         }
-                        viewModel.updateUser(EntityUser(
-                            user.id,
-                            user.name,
-                            user.mail,
-                            user.phone
-                        ))
-                    }catch (e: Exception){}
+                    }
+                    else {
+                        viewModel.updateUser(
+                            EntityUser(
+                                user.id,
+                                user.name,
+                                user.mail,
+                                user.phone
+                            )
+                        )
+                    }
                 }
             }
         }
+        viewModel.getAllMessage().observe(this,{
+            it.forEach { message ->
+                if(!message.send){
+                    viewModel.getFirebaseDatabase()
+                        .getReference("${message.chatID}-${message.fromID}")
+                        .addChildEventListener(listenerStatus())
+                }
+            }
+        })
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.fragment) as NavHostFragment
         val navController = navHostFragment.navController
@@ -98,32 +114,73 @@ class MainActivity : AppCompatActivity() {
                 if(snapshot.value != null) {
                     val message = snapshot.getValue<EntityMessage>()
                     if (message != null) {
-                        viewModel.newMessage(message)
-                        if(message.fromID == "-1") //system message
-                        {
-                            viewModel.getFirebaseDatabase()
-                                .getReference(viewModel.getAuth().currentUser!!.uid)
-                                .setValue(null)
-                            if(message.text != "send_success" && message.text != "seen_success") {
-                                viewModel.getFirebaseDatabase()
-                                    .getReference(message.text).addChildEventListener(listener())
-                            }
-                        }
-                        else if(message.fromID != viewModel.getAuth().currentUser!!.uid) {
-                            notification(message)
-                            val ref = message.fromID
-                            message.sendList = viewModel.getAuth().currentUser!!.uid
-                            message.fromID = "-1"
-                            message.text = "send_success"
-                            viewModel.getFirebaseDatabase()
-                                .getReference(ref).push()
-                                .setValue(message)
-                        }
+                        viewModel.checkMessageIsNew(message)
+                        notification(message)
                     }
                 }
             }
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 Log.d("change data",";)")
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("cancel firebase",";)")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                Log.d("moved child",";)")
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                Log.d("empty firebase",";)")
+            }
+        }
+    }
+    private fun listenerMyRef():ChildEventListener{
+        return object: ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                if(snapshot.value != null) {
+                    val message = snapshot.getValue<EntityMessage>()
+                    if (message != null) {
+                        viewModel.newMessage(message)
+                        if(message.fromID == "-1") //system message
+                        {
+                            viewModel.getFirebaseDatabase()
+                                .getReference(message.text).addChildEventListener(listener())
+                        }
+                        else{
+                            viewModel.checkMessageIsNew(message)
+                            notification(message)
+                        }
+                        viewModel.getFirebaseDatabase()
+                            .getReference(viewModel.getAuth().currentUser!!.uid)
+                            .setValue(null)
+                    }
+                }
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                Log.d("change data",";)")
+            }
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("cancel firebase",";)")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                Log.d("moved child",";)")
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                Log.d("empty firebase",";)")
+            }
+        }
+    }
+    private fun listenerStatus():ChildEventListener{
+        return object: ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                Log.d("add child",";)")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                if(snapshot.value != null){
+                    val ref = snapshot.key.toString()
+                    val count = snapshot.childrenCount.toInt()
+                    viewModel.checkMessageSend(ref,count)
+                }
+
             }
             override fun onCancelled(error: DatabaseError) {
                 Log.d("cancel firebase",";)")

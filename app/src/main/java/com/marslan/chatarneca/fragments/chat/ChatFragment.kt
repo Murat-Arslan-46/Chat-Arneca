@@ -53,7 +53,6 @@ class ChatFragment : Fragment() {
                     viewModel.updateMessage(it)
                 }
             }
-            adapter.notifyDataSetChanged()
             binding.chatMessageList.smoothScrollToPosition(binding.chatMessageList.adapter!!.itemCount)
         })
         setHasOptionsMenu(true)
@@ -92,7 +91,6 @@ class ChatFragment : Fragment() {
             else
                 10000 + chat.id
         val message = EntityMessage(id,text,date,fromID,chat.id)
-        currentList.add(message)
         val key = viewModel.getFirebaseDatabase().getReference(chat.toRef).push().key
         message.ref = key.toString()
         viewModel.getFirebaseDatabase().getReference(chat.toRef).child(key.toString()).setValue(message)
