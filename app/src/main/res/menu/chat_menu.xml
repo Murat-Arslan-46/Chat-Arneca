@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/info"
-        android:icon="@drawable/info"
-        android:title="info"
-        app:showAsAction="ifRoom"/>
+        android:id="@+id/copy"
+        android:icon="@drawable/ic_menu_copy"
+        android:title="Item"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/delete"
-        android:icon="@drawable/delete"
+        android:icon="@drawable/ic_menu_delete"
         android:title="delete"
         app:showAsAction="ifRoom|withText"/>
 

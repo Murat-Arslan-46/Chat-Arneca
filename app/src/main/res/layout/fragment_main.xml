@@ -7,17 +7,33 @@
     android:layout_height="match_parent"
     tools:context=".fragments.main.MainFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/main_chat_list"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vp_home"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/tabs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorOnSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_chat_list" />
-
+        app:tabIndicatorAnimationDuration="700"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabIndicatorColor="?attr/colorPrimary"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorGravity="top"
+        app:tabIndicatorHeight="2dp"
+        app:tabInlineLabel="false"
+        app:tabMode="fixed"
+        app:tabSelectedTextColor="?attr/colorPrimary"
+        app:tabTextAppearance="@style/TextAppearance.AppCompat.Small"
+        app:tabTextColor="?attr/colorPrimary"
+        tools:ignore="SpeakableTextPresentCheck" />
 </androidx.constraintlayout.widget.ConstraintLayout>

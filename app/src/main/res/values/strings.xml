@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Chat App</string>
+    <string name="app_name">MektUp</string>
     <string name="login_username">username</string>
     <string name="password">password</string>
     <string name="new_account">new account</string>
@@ -16,4 +16,8 @@
     <string name="setting">setting</string>
     <string name="phone">phone</string>
     <string name="mail">mail</string>
+    <string name="home">Home</string>
+    <string name="contact">Contact</string>
+    <string name="chat">Chat</string>
+    <string name="group">Group</string>
 </resources>

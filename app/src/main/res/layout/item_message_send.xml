@@ -10,22 +10,27 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_margin="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp">
 
         <TextView
             android:id="@+id/send_message"
-            android:layout_height="wrap_content"
-            android:maxWidth="250dp"
             android:layout_width="wrap_content"
-            android:padding="16dp"
-            android:background="@drawable/chf_receive_message"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/background_send_message_box"
+            android:fontFamily="@font/el_messiri_semibold"
+            android:maxWidth="250dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
             android:text="@{message.text}"
-            tools:text="null"
-            android:textColor="@android:color/white"
+            android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="null" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -36,6 +41,6 @@
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/send_message"
             app:layout_constraintEnd_toEndOf="@+id/send_message"
-            app:srcCompat="@drawable/icon_send" />
+            app:srcCompat="@drawable/check_ic_first" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

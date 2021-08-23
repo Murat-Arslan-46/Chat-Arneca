@@ -1,19 +1,27 @@
 package com.marslan.chatarneca.fragments.chat
 
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.marslan.chatarneca.R
-import com.marslan.chatarneca.data.*
+import com.marslan.chatarneca.data.EntityChat
+import com.marslan.chatarneca.data.EntityMessage
+import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.databinding.FragmentChatBinding
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
+import androidx.recyclerview.widget.RecyclerView
+
+
+
 
 
 class ChatFragment : Fragment() {
@@ -38,7 +46,8 @@ class ChatFragment : Fragment() {
             sendMessage(auth)
         }
         selectedMessage = arrayListOf()
-        adapter = ChatAdapter(arrayListOf(),selectedMessage,auth.uid.toString(),this::onClick,this::onLongClick)
+        val isNotGroup = chat.users.split("%").size <= 2
+        adapter = ChatAdapter(arrayListOf(),selectedMessage,isNotGroup,auth.uid.toString(),this::onClick,this::onLongClick)
         binding.chatMessageList.adapter = adapter
         viewModel.getMessageWithChatID(chat.id).observe(requireActivity(), { list ->
             adapter.currentList = list as ArrayList<EntityMessage>
@@ -51,7 +60,6 @@ class ChatFragment : Fragment() {
             adapter.notifyDataSetChanged()
             binding.chatMessageList.smoothScrollToPosition(adapter.itemCount)
         })
-        setHasOptionsMenu(true)
         return (binding.root)
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -59,8 +67,12 @@ class ChatFragment : Fragment() {
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.info -> {
-                findNavController().navigate(R.id.action_chatFragment_to_chatInfoFragment)
+            R.id.copy -> {
+                val textToCopy = selectedMessage[0].text
+                val clipboardManager = getSystemService(requireContext(),ClipboardManager::class.java) as ClipboardManager
+                val clipData = ClipData.newPlainText("text", textToCopy)
+                clipboardManager.setPrimaryClip(clipData)
+                Toast.makeText(requireContext(),"copy message",Toast.LENGTH_SHORT).show()
                 true
             }
             R.id.delete -> {
@@ -75,6 +87,8 @@ class ChatFragment : Fragment() {
     private fun sendMessage(auth: FirebaseAuth) {
         val text : String
         binding.chatInputText.text.apply {
+            if(this.isEmpty())
+                return
             text = this.toString()
             clear()
         }
@@ -94,12 +108,24 @@ class ChatFragment : Fragment() {
     }
 
     private fun onLongClick(message: EntityMessage):Boolean{
-        if(selectedMessage.none { it == message })
-            selectedMessage.add(message)
-        else
-            selectedMessage.remove(message)
+        if(selectedMessage.isEmpty()){
+            setHasOptionsMenu(true)
+            if (selectedMessage.none { it == message })
+                selectedMessage.add(message)
+            else
+                selectedMessage.remove(message)
+        }
         return true
     }
 
-    private fun onClick(message: EntityMessage){}
+    private fun onClick(message: EntityMessage){
+        if(selectedMessage.isNotEmpty()){
+            if(selectedMessage.none { it == message })
+                selectedMessage.add(message)
+            else
+                selectedMessage.remove(message)
+        }
+        if(selectedMessage.isEmpty())
+            setHasOptionsMenu(false)
+    }
 }

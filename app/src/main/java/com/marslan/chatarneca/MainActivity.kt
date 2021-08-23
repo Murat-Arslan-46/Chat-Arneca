@@ -18,7 +18,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.EntityMessage
 import com.marslan.chatarneca.data.EntityUser
@@ -27,6 +29,7 @@ import com.marslan.chatarneca.data.User
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: SharedViewModel
+    private lateinit var listener: ChildEventListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,17 +66,13 @@ class MainActivity : AppCompatActivity() {
         viewModel.getAllMessage().observe(this,{
             it.forEach { message ->
                 if(!message.send){
-                    viewModel.getFirebaseDatabase()
+                    listener = viewModel.getFirebaseDatabase()
                         .getReference("${message.chatID}-${message.fromID}")
                         .addChildEventListener(listenerStatus())
                 }
             }
         })
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.fragment) as NavHostFragment
-        val navController = navHostFragment.navController
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
     }
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun notification(message: EntityMessage){
@@ -195,5 +194,10 @@ class MainActivity : AppCompatActivity() {
                 Log.d("empty firebase",";)")
             }
         }
+    }
+
+    override fun onDestroy() {
+        Firebase.database.reference.removeEventListener(listener)
+        super.onDestroy()
     }
 }

@@ -10,19 +10,24 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_margin="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp">
 
         <TextView
             android:id="@+id/receive_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/chf_send_message"
+            android:layout_marginTop="2dp"
+            android:background="@drawable/background_receive_message_box"
+            android:fontFamily="@font/el_messiri_semibold"
             android:maxWidth="250dp"
-            android:padding="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
             android:text="@{message.text}"
-            android:textColor="@android:color/white"
+            android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/receive_from_text"
             tools:text="null" />
@@ -32,6 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{message.fromID}"
+            android:textColor="@color/primary_color_dark"
             app:layout_constraintStart_toStartOf="@+id/receive_message"
             app:layout_constraintTop_toTopOf="parent" />
 

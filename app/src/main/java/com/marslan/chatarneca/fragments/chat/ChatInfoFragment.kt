@@ -17,7 +17,7 @@ import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.EntityChat
 import com.marslan.chatarneca.data.User
 import com.marslan.chatarneca.databinding.FragmentChatInfoBinding
-import com.marslan.chatarneca.fragments.contact.ContactAdapter
+import com.marslan.chatarneca.fragments.main.contact.ContactAdapter
 
 class ChatInfoFragment : Fragment() {
 

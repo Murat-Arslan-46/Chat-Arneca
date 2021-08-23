@@ -13,28 +13,38 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/chf_input"
+        android:background="@drawable/background_input_box"
         android:hint="hi!"
-        android:padding="16dp"
         android:maxHeight="100dp"
+        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/chat_send_message"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chat_message_list" />
 
     <Button
         android:id="@+id/chat_send_message"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/chf_button"
-        android:padding="5dp"
-        android:text="@string/Send"
-        android:textColor="@color/white"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/btn_chat_send"
         app:layout_constraintBottom_toBottomOf="@+id/chat_input_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/chat_input_text" />
+        app:layout_constraintEnd_toEndOf="@+id/chat_input_text" />
+
+    <Button
+        android:id="@+id/chat_send_media"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/btn_chat_attach"
+        app:layout_constraintBottom_toBottomOf="@+id/chat_input_text"
+        app:layout_constraintEnd_toStartOf="@+id/chat_send_message" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_message_list"

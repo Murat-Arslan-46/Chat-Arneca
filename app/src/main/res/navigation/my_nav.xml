@@ -12,10 +12,11 @@
         tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_chatFragment"
-            app:destination="@id/chatFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_contactFragment"
-            app:destination="@id/contactFragment" />
+            app:destination="@id/chatFragment"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/slide_in_down"
+            app:popEnterAnim="@anim/slide_out_down"
+            app:popExitAnim="@anim/slide_out_up" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
@@ -24,13 +25,12 @@
         tools:layout="@layout/fragment_chat">
         <action
             android:id="@+id/action_chatFragment_to_chatInfoFragment"
-            app:destination="@id/chatInfoFragment" />
+            app:destination="@id/chatInfoFragment"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/slide_in_down"
+            app:popEnterAnim="@anim/slide_out_down"
+            app:popExitAnim="@anim/slide_out_up" />
     </fragment>
-    <fragment
-        android:id="@+id/contactFragment"
-        android:name="com.marslan.chatarneca.fragments.contact.ContactFragment"
-        android:label="new chat"
-        tools:layout="@layout/fragment_contact"/>
     <fragment
         android:id="@+id/chatInfoFragment"
         android:name="com.marslan.chatarneca.fragments.chat.ChatInfoFragment"

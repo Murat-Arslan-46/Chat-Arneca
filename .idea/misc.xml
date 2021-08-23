@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/background_receive_message_box.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/background_send_message_box.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/bg_button.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/bg_input.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/bg_receive_message.xml" value="0.202734375" />
@@ -14,11 +16,39 @@
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/chf_receive_message.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/chf_send_message.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/delete.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_app.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_app_background.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_baseline_forum_24.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_c.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_chat.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_conact.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_contact_book.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_copy.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_delete.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_delete_button.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_g.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_g1.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_group.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_home.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_information.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_launcher_background.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_letter.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_mail.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_send.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_send__1_.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_send_button.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_speech_bubble.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_speech_bubble__1_.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_user.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_attach.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_chat.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_contact.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_copy.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_home.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_new_chat.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_new_group.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_profile.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_send.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_sign_out.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/info.xml" value="0.202734375" />
@@ -26,13 +56,19 @@
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/mf_button.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/mf_item.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/mf_item_people_icon.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/mf_item_person_icon.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/font/armata.xml" value="0.21081081081081082" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/font/el_messiri_semibold.xml" value="0.21081081081081082" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/font/spirax.xml" value="0.21081081081081082" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/activity_login.xml" value="0.190625" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/activity_main.xml" value="0.190625" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_chat.xml" value="0.2" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_chat_info.xml" value="0.2" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_contact.xml" value="0.190625" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_group.xml" value="0.190625" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_home.xml" value="0.190625" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_login.xml" value="0.264" />
-        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_main.xml" value="0.264" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_main.xml" value="0.2" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_register.xml" value="0.24895833333333334" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/item_chat_list.xml" value="0.264" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/item_chat_user.xml" value="0.190625" />
