@@ -6,24 +6,21 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.EntityMessage
 import com.marslan.chatarneca.data.EntityUser
+import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.User
 
 class MainActivity : AppCompatActivity() {
@@ -72,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
+        supportFragmentManager.findFragmentById(R.id.fragment)
     }
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun notification(message: EntityMessage){

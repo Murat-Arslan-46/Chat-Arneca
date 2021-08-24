@@ -3,7 +3,7 @@
     <style name="Theme.ChatArneca" parent="Theme.AppCompat">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primary_color</item>
-        <item name="colorPrimaryVariant">@color/secondary_color</item>
+        <item name="colorPrimaryVariant">@color/primary_color_dark</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/secondary_color</item>

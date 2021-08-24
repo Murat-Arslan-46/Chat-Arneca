@@ -1,45 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="6dp">
 
-    <data>
-        <variable
-            name="message"
-            type="com.marslan.chatarneca.data.EntityMessage" />
-    </data>
+    <TextView
+        android:id="@+id/receive_from_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/primary_color_dark"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:id="@+id/receive_message_layout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="6dp">
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/background_receive_message_box"
+        android:paddingEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/receive_from_text">
+
+        <ImageView
+            android:id="@+id/receive_media_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/background_media_box"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_download"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/receive_message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_max="250dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="250dp" />
 
         <TextView
             android:id="@+id/receive_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/background_receive_message_box"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:fontFamily="@font/el_messiri_semibold"
-            android:maxWidth="250dp"
-            android:paddingStart="16dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="8dp"
-            android:text="@{message.text}"
+            android:text="@string/app_name"
             android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/receive_from_text"
-            tools:text="null" />
-
-        <TextView
-            android:id="@+id/receive_from_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{message.fromID}"
-            android:textColor="@color/primary_color_dark"
-            app:layout_constraintStart_toStartOf="@+id/receive_message"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/receive_media_box" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

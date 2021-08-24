@@ -1,6 +1,8 @@
 package com.marslan.chatarneca.data
 
 import android.app.Application
+import android.os.Environment
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -9,8 +11,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 class SharedViewModel(application: Application): AndroidViewModel(application) {
     private val repository : SharedRepository
@@ -19,6 +25,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     private var chat : EntityChat
     private var userIndex : Int
     private var newGroupFlag : Boolean
+    private var appDir: File
     init {
         val messageDao = SharedDatabase.getDatabase(application).messageDao()
         userIndex = -1
@@ -27,6 +34,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
         repository = SharedRepository(messageDao)
         chat = EntityChat()
         newGroupFlag = false
+        appDir = Environment.getExternalStorageDirectory()
     }
     fun getAuth() = auth
     fun getFirebaseDatabase() = db
@@ -116,8 +124,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
                         val users = "${entityMessage.fromID}%${auth.currentUser!!.uid}"
                         val randID = entityMessage.chatID
                         val name = message.fromID
-                        val tempChat = EntityChat(randID, name, entityMessage.fromID, users)
-                        newChat(tempChat)
+                        newChat(EntityChat(randID, name, entityMessage.fromID, users))
                     }
                 }
             } // new message receive
@@ -130,7 +137,6 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     private fun newChat(entityChat: EntityChat){
         viewModelScope.launch(Dispatchers.IO) { repository.newChat(entityChat) }
     }
-
     fun deleteChat(entityChat: EntityChat){
         viewModelScope.launch(Dispatchers.IO) { repository.deleteChat(entityChat) }
     }
@@ -139,9 +145,10 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
             repository.updateChat(entityChat)
         }
     }
-
     //fun newUser(user: EntityUser){viewModelScope.launch(Dispatchers.IO) { repository.newUser(user) }}
     fun updateUser(user: EntityUser){
         viewModelScope.launch(Dispatchers.IO) { repository.updateUser(user) }
     }
+    fun setAppDir(file: File){appDir = file}
+    fun getAppDir() = appDir
 }

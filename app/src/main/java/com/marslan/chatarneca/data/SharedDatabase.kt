@@ -23,7 +23,7 @@ abstract class SharedDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     SharedDatabase::class.java,
-                    "chat_app_v2_db"
+                    "chat_app_v3_db"
                 ).build()
                 INSTANCE = instance
                 return instance

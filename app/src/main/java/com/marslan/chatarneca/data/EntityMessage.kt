@@ -14,5 +14,6 @@ data class EntityMessage(
     var iSaw: Boolean = false,
     var seen: Boolean = false,
     var send: Boolean = false,
-    var ref: String = ""
+    var ref: String = "",
+    val media: Boolean = false
 )
