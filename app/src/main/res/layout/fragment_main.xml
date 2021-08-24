@@ -20,20 +20,19 @@
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorOnSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:tabIndicatorAnimationDuration="700"
-        app:tabIndicatorAnimationMode="elastic"
-        app:tabIndicatorColor="?attr/colorPrimary"
+        app:tabGravity="fill"
+        app:tabIndicator="@drawable/background_input_box"
+        app:tabIndicatorAnimationMode="linear"
+        app:tabIndicatorColor="?attr/colorOnSecondary"
         app:tabIndicatorFullWidth="true"
         app:tabIndicatorGravity="top"
-        app:tabIndicatorHeight="2dp"
+        app:tabIndicatorHeight="100dp"
         app:tabInlineLabel="false"
         app:tabMode="fixed"
-        app:tabSelectedTextColor="?attr/colorPrimary"
         app:tabTextAppearance="@style/TextAppearance.AppCompat.Small"
-        app:tabTextColor="?attr/colorPrimary"
-        tools:ignore="SpeakableTextPresentCheck" />
+        app:tabTextColor="?attr/colorPrimary"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

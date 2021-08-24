@@ -2,8 +2,11 @@ package com.marslan.chatarneca.fragments.main
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.*
 import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.marslan.chatarneca.databinding.FragmentMainBinding
 import com.marslan.chatarneca.fragments.main.contact.ContactFragment
@@ -35,9 +38,34 @@ class MainFragment : Fragment() {
             vpHome.adapter = adapter
         }
         TabLayoutMediator(binding.tabs,binding.vpHome){tab, position ->
-            tab.text = requireActivity().getText(adapter.tittle[position])
             tab.icon = requireActivity().getDrawable(adapter.icon[position])
         }.attach()
+        binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            var text = false
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                if(text) {
+                    text = !text
+                    onTabUnselected(tab)
+                }
+                else {
+                    text = !text
+                    onTabSelected(tab)
+                }
+            }
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                val pagerControl = binding.tabs.selectedTabPosition == binding.vpHome.currentItem
+                if(pagerControl && !text)
+                    return
+                Handler(Looper.getMainLooper()).postDelayed({
+                    val index = binding.vpHome.currentItem
+                    tab?.text = getString(adapter.title[index])
+                    text = true
+                }, 10)
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                Handler(Looper.getMainLooper()).postDelayed({tab?.text = ""},100)
+            }
+        })
         return binding.root
     }
 }

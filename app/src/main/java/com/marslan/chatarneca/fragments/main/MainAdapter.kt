@@ -14,7 +14,7 @@ class MainAdapter(
 
     private val fragmentList = list
 
-    val tittle = listOf(
+    val title = listOf(
         R.string.chat,
         R.string.group,
         R.string.contact,
