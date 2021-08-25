@@ -126,6 +126,17 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
                         val name = message.fromID
                         newChat(EntityChat(randID, name, entityMessage.fromID, users))
                     }
+                    val maxDownloadSizeBytes: Long = 1024 * 1024
+                    val ref = FirebaseStorage.getInstance().reference
+                    val firebaseRef = ref.child("${message.chatID}/${message.id}.jpg")
+                    firebaseRef.getBytes(maxDownloadSizeBytes).addOnSuccessListener {
+                        if (it != null) {
+                            val file = File(appDir, "${message.chatID}-${message.id}.jpg")
+                            val stream = FileOutputStream(file.path)
+                            stream.write(it)
+                            stream.close()
+                        }
+                    }
                 }
             } // new message receive
         }

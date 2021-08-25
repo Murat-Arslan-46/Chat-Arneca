@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -22,6 +23,7 @@ import com.marslan.chatarneca.data.EntityMessage
 import com.marslan.chatarneca.data.EntityUser
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.User
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,6 +72,17 @@ class MainActivity : AppCompatActivity() {
             }
         })
         supportFragmentManager.findFragmentById(R.id.fragment)
+        val appDir = File(Environment.getExternalStorageDirectory(), "ChatApp")
+            .apply {
+                if (!exists())
+                    mkdir()
+            }
+        val imageDir = File(appDir, "image")
+            .apply {
+                if (!exists())
+                    mkdir()
+            }
+        viewModel.setAppDir(imageDir)
     }
     @SuppressLint("UnspecifiedImmutableFlag")
     private fun notification(message: EntityMessage){

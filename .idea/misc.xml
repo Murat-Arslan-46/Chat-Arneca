@@ -50,6 +50,7 @@
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_speech_bubble.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_speech_bubble__1_.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_user.xml" value="0.202734375" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/ic_waiting.xml" value="0.20038610038610039" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_attach.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_chat.xml" value="0.202734375" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/drawable/icon_contact.xml" value="0.202734375" />
@@ -75,7 +76,7 @@
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/font/spirax.xml" value="0.21081081081081082" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/activity_login.xml" value="0.190625" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/activity_main.xml" value="0.190625" />
-        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_chat.xml" value="0.264" />
+        <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_chat.xml" value="0.2" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_chat_info.xml" value="0.2" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_contact.xml" value="0.190625" />
         <entry key="..\:/Users/Murat/OneDrive/Documents/ChatArneca/app/src/main/res/layout/fragment_group.xml" value="0.190625" />

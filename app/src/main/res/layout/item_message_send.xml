@@ -24,7 +24,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/background_media_box"
-            android:scaleType="centerCrop"
+            android:scaleType="fitXY"
             android:src="@drawable/ic_download"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/send_message"

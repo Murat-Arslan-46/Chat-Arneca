@@ -14,10 +14,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.EntityChat
@@ -33,16 +30,15 @@ import java.util.*
 class ChatFragment : Fragment() {
 
     companion object {
-        var attachMedia = false
-        var media: Uri? = null
-        private lateinit var viewModel: SharedViewModel
+        private var attachMedia = false
+        private var media: Uri? = null
+        private var selectedMessage = arrayListOf<EntityMessage>()
         private lateinit var binding: FragmentChatBinding
-        private lateinit var adapter : ChatAdapter
+        private lateinit var viewModel: SharedViewModel
         private lateinit var chat: EntityChat
-        private lateinit var selectedMessage : ArrayList<EntityMessage>
+        private lateinit var adapter : ChatAdapter
     }
 
-    @SuppressLint("FragmentLiveDataObserve", "NotifyDataSetChanged", "RestrictedApi")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,17 +46,24 @@ class ChatFragment : Fragment() {
     ): View {
         binding = FragmentChatBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
-        val auth = viewModel.getAuth()
         chat = viewModel.getCurrentChat()
-        binding.chatSendMessage.setOnClickListener {
-            sendMessage(auth)
-        }
-        selectedMessage = arrayListOf()
         val isNotGroup = chat.users.split("%").size <= 2
-        adapter = ChatAdapter(arrayListOf(),selectedMessage,isNotGroup,this::onClick,this::onLongClick)
-        binding.chatMessageList.adapter = adapter
+        adapter = ChatAdapter(
+            arrayListOf(),
+            selectedMessage,
+            isNotGroup,
+            this::onClickMessage,
+            this::onLongClickMessage,
+            this::imageViewer
+        )
+        binding.apply{
+            chatMessageList.adapter = adapter
+            chatSendMessage.setOnClickListener { onClickSend() }
+            chatSendMedia.setOnClickListener { onClickAttach() }
+            chatMediaCancel.setOnClickListener { cancelMedia() }
+        }
         viewModel.getMessageWithChatID(chat.id).observe(requireActivity(), { list ->
-            adapter.setSubmitList(list as ArrayList<EntityMessage>)
+            adapter.setCurrentList(list as ArrayList<EntityMessage>)
             list.forEach {
                 if(!it.iSaw){
                     it.iSaw = true
@@ -69,14 +72,112 @@ class ChatFragment : Fragment() {
             }
             binding.chatMessageList.smoothScrollToPosition(adapter.itemCount)
         })
-        binding.chatSendMedia.setOnClickListener { attachMedia() }
-        binding.chatMediaCancel.setOnClickListener {
-            binding.chatMediaPreview.visibility = View.GONE
-            binding.chatMediaCancel.visibility = View.GONE
-            attachMedia = false
-            media = null
-        }
         return (binding.root)
+    }
+    @SuppressLint("SimpleDateFormat")
+    private fun onClickSend() {
+        binding.chatSendMessage.setBackgroundResource(R.drawable.ic_waiting)
+        val id =
+        if(adapter.itemCount != 0)
+            (((adapter.getLastItem().id/10000)+1)*10000) + chat.id
+        else
+            10000 + chat.id
+        val text = binding.chatInputText.text.toString()
+        val date = SimpleDateFormat("dd/MM/yy HH:mm").format(Date())
+        val fromID = viewModel.getAuth().uid.toString()
+        val message = EntityMessage(id,text,date,fromID,chat.id,media = attachMedia)
+        message.ref = viewModel.getFirebaseDatabase()
+            .getReference(chat.toRef).push().key.toString()
+
+        if(attachMedia){
+            Firebase.storage
+            .getReference("${message.chatID}/${message.id}.jpg").putFile(media!!)
+            .addOnSuccessListener {
+                val appDir = File(Environment.getExternalStorageDirectory(),"ChatApp")
+                    .apply {
+                        if (!exists())
+                            mkdir()
+                    }
+                val imageDir = File(appDir,"image")
+                    .apply {
+                        if (!exists())
+                            mkdir()
+                    }
+                val file = File(imageDir,"${message.chatID}-${message.id}.jpg")
+                val stream = FileOutputStream(file.path)
+                val byteArray = requireActivity().contentResolver.openInputStream(media!!)?.readBytes()
+                stream.write(byteArray)
+                stream.close()
+                sendToFirebase(message)
+            }
+            .addOnCanceledListener {
+                Toast.makeText(requireContext(),getString(R.string.error_send),Toast.LENGTH_SHORT).show()
+            }
+        }
+        else{
+            sendToFirebase(message)
+        }
+    }
+    private fun sendToFirebase(message: EntityMessage){
+        viewModel.getFirebaseDatabase().getReference(chat.toRef)
+            .child(message.ref).setValue(message)
+            .addOnSuccessListener {
+                viewModel.newMessage(message)
+                binding.chatInputText.text.clear()
+                cancelMedia()
+                binding.chatSendMessage.setBackgroundResource(R.drawable.btn_chat_send)
+            }
+            .addOnCanceledListener {
+                Toast.makeText(requireContext(),getString(R.string.error_send),Toast.LENGTH_SHORT).show()
+                binding.chatSendMessage.setBackgroundResource(R.drawable.btn_chat_send)
+            }
+    }
+    private fun onLongClickMessage(message: EntityMessage):Boolean{
+        if(selectedMessage.isEmpty()){
+            setHasOptionsMenu(true)
+            if (selectedMessage.none { it == message })
+                selectedMessage.add(message)
+            else
+                selectedMessage.remove(message)
+        }
+        return true
+    }
+    private fun onClickMessage(message: EntityMessage){
+        if(selectedMessage.isNotEmpty()){
+            if(selectedMessage.none { it == message })
+                selectedMessage.add(message)
+            else
+                selectedMessage.remove(message)
+        }
+        if(selectedMessage.isEmpty())
+            setHasOptionsMenu(false)
+    }
+    private fun onClickAttach() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, 1)
+    }
+    private fun cancelMedia(){
+        binding.chatMediaPreview.visibility = View.GONE
+        binding.chatMediaCancel.visibility = View.GONE
+        attachMedia = false
+        media = null
+    }
+    private fun imageViewer(uri: Uri){
+        binding.chatImageViewer.apply {
+            setImageURI(uri)
+            visibility = View.VISIBLE
+            setOnClickListener { visibility = View.GONE }
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == 1){
+            media = data?.data
+            binding.chatMediaPreview.setImageURI(media)
+            binding.chatMediaPreview.visibility = View.VISIBLE
+            binding.chatMediaCancel.visibility = View.VISIBLE
+            attachMedia = true
+        }
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.chat_menu, menu)
@@ -98,91 +199,4 @@ class ChatFragment : Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-    @SuppressLint("SimpleDateFormat", "NotifyDataSetChanged")
-    private fun sendMessage(auth: FirebaseAuth) {
-        val text : String
-        binding.chatInputText.text.apply {
-            if(this.isEmpty())
-                return
-            text = this.toString()
-            clear()
-        }
-        val fromID = auth.currentUser!!.uid
-        val sdf = SimpleDateFormat("dd/MM/yy HH:mm")
-        val date = sdf.format(Date())
-        val id =
-            if(adapter.itemCount != 0)
-                (((adapter.getLastItem().id/10000)+1)*10000) + chat.id
-            else
-                10000 + chat.id
-        val message = EntityMessage(id,text,date,fromID,chat.id,media = attachMedia)
-        val key = viewModel.getFirebaseDatabase().getReference(chat.toRef).push().key
-        message.ref = key.toString()
-        if(attachMedia){
-            Firebase.storage
-                .getReference("${message.chatID}/${message.id}.jpg")
-                .putFile(media!!)
-            val appDir = File(Environment.getExternalStorageDirectory(),"ChatApp")
-                .apply {
-                    if (!exists())
-                        mkdir()
-                }
-            val imageDir = File(appDir,"image")
-                .apply {
-                    if (!exists())
-                        mkdir()
-                }
-            val localFile = File(imageDir,"${message.chatID}-${message.id}.jpg")
-            val stream = FileOutputStream(localFile.path)
-            val byteArray = requireActivity().contentResolver.openInputStream(media!!)?.readBytes()
-            stream.write(byteArray)
-            stream.close()
-            binding.chatMediaPreview.visibility = View.GONE
-            binding.chatMediaCancel.visibility = View.GONE
-            attachMedia = false
-            media = null
-        }
-        viewModel.getFirebaseDatabase().getReference(chat.toRef).child(key.toString()).setValue(message)
-        viewModel.newMessage(message)
-    }
-
-    private fun onLongClick(message: EntityMessage):Boolean{
-        if(selectedMessage.isEmpty()){
-            setHasOptionsMenu(true)
-            if (selectedMessage.none { it == message })
-                selectedMessage.add(message)
-            else
-                selectedMessage.remove(message)
-        }
-        return true
-    }
-
-    private fun onClick(message: EntityMessage){
-        if(selectedMessage.isNotEmpty()){
-            if(selectedMessage.none { it == message })
-                selectedMessage.add(message)
-            else
-                selectedMessage.remove(message)
-        }
-        if(selectedMessage.isEmpty())
-            setHasOptionsMenu(false)
-    }
-
-    private fun attachMedia() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, 1)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == 1){
-            media = data?.data
-            binding.chatMediaPreview.setImageURI(media)
-            binding.chatMediaPreview.visibility = View.VISIBLE
-            binding.chatMediaCancel.visibility = View.VISIBLE
-            attachMedia = true
-        }
-    }
-
 }

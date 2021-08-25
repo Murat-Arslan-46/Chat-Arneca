@@ -24,7 +24,8 @@ class ChatAdapter(
     val selectedList: List<EntityMessage>,
     private val isNotGroup: Boolean,
     private val onClick: (EntityMessage) -> Unit,
-    private val onLongClick: (EntityMessage) -> Boolean
+    private val onLongClick: (EntityMessage) -> Boolean,
+    private val imageViewer: (Uri) -> Unit
     )
     :RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -60,7 +61,7 @@ class ChatAdapter(
                 RECEIVE
     }
     @SuppressLint("NotifyDataSetChanged")
-    fun setSubmitList(list: List<EntityMessage>){
+    fun setCurrentList(list: List<EntityMessage>){
         currentList = list
         notifyDataSetChanged()
     }
@@ -87,47 +88,46 @@ class ChatAdapter(
                 }
                 onClick(message)
             }
-            if(message.send)
-                binding.statusCheck.visibility = View.VISIBLE
-            else
-                binding.statusCheck.visibility = View.INVISIBLE
-            if(message.media) {
-                val appDir = File(Environment.getExternalStorageDirectory(), "ChatApp")
-                    .apply {
-                        if (!exists())
-                            mkdir()
-                    }
-                val imageDir = File(appDir, "image")
-                    .apply {
-                        if (!exists())
-                            mkdir()
-                    }
-                val file = File(imageDir, "${message.chatID}-${message.id}.jpg")
-                Log.e("path", file.path)
-                if (file.exists()) {
-                    val image = Uri.fromFile(file)
-                    Log.e("path", file.path)
-                    binding.sendMediaBox.setImageURI(image)
-                }
-                binding.sendMediaBox.visibility = View.VISIBLE
+            binding.statusCheck.apply {
+                visibility =
+                            if (message.send)
+                                View.VISIBLE
+                            else
+                                View.INVISIBLE
             }
-            else
-                binding.sendMediaBox.visibility = View.GONE
+            binding.sendMediaBox.apply {
+                if (message.media) {
+                    val appDir = File(Environment.getExternalStorageDirectory(), "ChatApp")
+                                .apply {
+                                    if (!exists())
+                                        mkdir()
+                                }
+                    val imageDir = File(appDir, "image")
+                                .apply {
+                                    if (!exists())
+                                        mkdir()
+                                }
+                    val file = File(imageDir, "${message.chatID}-${message.id}.jpg")
+
+                    if (file.exists()) {
+                        val image = Uri.fromFile(file)
+                        setImageURI(image)
+                        setOnClickListener { imageViewer(image) }
+                    }
+                    visibility = View.VISIBLE
+                }
+                else {
+                    visibility = View.GONE
+                }
+            }
         }
     }
 
     inner class ReceiveMessageViewHolder(private val binding: ItemMessageReceiveBinding) :
         RecyclerView.ViewHolder(binding.root){
-        @SuppressLint("NotifyDataSetChanged")
         fun bind(position: Int){
             val message = currentList[position]
             binding.receiveMessage.text = message.text
-            if(isNotGroup)
-                binding.receiveFromText.visibility = View.GONE
-            else if(position != 0 && message.fromID == currentList[position-1].fromID)
-                binding.receiveFromText.visibility = View.GONE
-            else
-                binding.receiveFromText.visibility = View.VISIBLE
             binding.root.setOnLongClickListener {
                 if(selectedList.isEmpty()){
                     if (selectedList.none { it == message })
@@ -146,53 +146,59 @@ class ChatAdapter(
                 }
                 onClick(message)
             }
-            if(message.media) {
-                val appDir = File(Environment.getExternalStorageDirectory(),"ChatApp")
-                .apply {
-                    if (!exists())
-                        mkdir()
-                }
-                val imageDir = File(appDir,"image")
-                    .apply {
-                        if (!exists())
-                            mkdir()
-                    }
-                val file = File(imageDir,"${message.chatID}-${message.id}.jpg")
-                if(file.exists()) {
-                    val image = Uri.fromFile(file)
-                    Log.e("path",file.path)
-                    binding.receiveMediaBox.setImageURI(image)
-                }
-                else
-                    binding.receiveMediaBox.setImageResource(R.drawable.ic_download)
-                binding.receiveMediaBox.visibility = View.VISIBLE
-                binding.receiveMediaBox.setOnClickListener {
-                    val ref = FirebaseStorage.getInstance().reference
-                    val firebaseRef = ref.child("${message.chatID}/${message.id}.jpg")
-                    val appDir = File(Environment.getExternalStorageDirectory(),"ChatApp")
+            binding.receiveFromText.apply {
+                text = message.fromID
+                visibility =
+                    if (isNotGroup)
+                        View.GONE
+                    else if (position != 0 && message.fromID == currentList[position - 1].fromID)
+                        View.GONE
+                    else
+                        View.VISIBLE
+            }
+            binding.receiveMediaBox.apply {
+                if (message.media) {
+                    val appDir = File(Environment.getExternalStorageDirectory(), "ChatApp")
                         .apply {
                             if (!exists())
                                 mkdir()
                         }
-                    val imageDir = File(appDir,"image")
+                    val imageDir = File(appDir, "image")
                         .apply {
                             if (!exists())
                                 mkdir()
                         }
-                    val localFile = File(imageDir,"${message.chatID}-${message.id}.jpg")
-                    val maxDownloadSizeBytes: Long = 1024 * 1024
-                    firebaseRef.getBytes(maxDownloadSizeBytes).addOnSuccessListener {
-                        if(it != null){
-                            val stream = FileOutputStream(localFile.path)
-                            stream.write(it)
-                            stream.close()
-                            notifyDataSetChanged()
-                        }
+                    val file = File(imageDir, "${message.chatID}-${message.id}.jpg")
+                    if (file.exists()) {
+                        val image = Uri.fromFile(file)
+                        Log.e("path", file.path)
+                        setImageURI(image)
+                        setOnClickListener { imageViewer(image) }
                     }
+                    else {
+                        setImageResource(R.drawable.ic_download)
+                        setOnClickListener {downloadImage(message,file)}
+                    }
+                    visibility = View.VISIBLE
+                }
+                else {
+                    visibility = View.GONE
                 }
             }
-            else
-                binding.receiveMediaBox.visibility = View.GONE
+        }
+        @SuppressLint("NotifyDataSetChanged")
+        fun downloadImage(message: EntityMessage, file: File){
+            val maxDownloadSizeBytes: Long = 1024 * 1024
+            val ref = FirebaseStorage.getInstance().reference
+            val firebaseRef = ref.child("${message.chatID}/${message.id}.jpg")
+            firebaseRef.getBytes(maxDownloadSizeBytes).addOnSuccessListener {
+                if (it != null) {
+                    val stream = FileOutputStream(file.path)
+                    stream.write(it)
+                    stream.close()
+                    notifyDataSetChanged()
+                }
+            }
         }
     }
 }

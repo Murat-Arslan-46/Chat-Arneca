@@ -99,4 +99,16 @@
         tools:itemCount="5"
         tools:listitem="@layout/item_message_send" />
 
+    <ImageView
+        android:id="@+id/chat_image_viewer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/black"
+        android:src="@drawable/background_input_box"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
