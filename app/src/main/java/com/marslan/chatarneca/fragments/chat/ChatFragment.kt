@@ -14,6 +14,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.google.android.gms.tasks.Task
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.marslan.chatarneca.R
@@ -32,7 +34,6 @@ class ChatFragment : Fragment() {
     companion object {
         private var attachMedia = false
         private var media: Uri? = null
-        private var selectedMessage = arrayListOf<EntityMessage>()
         private lateinit var binding: FragmentChatBinding
         private lateinit var viewModel: SharedViewModel
         private lateinit var chat: EntityChat
@@ -47,15 +48,12 @@ class ChatFragment : Fragment() {
         binding = FragmentChatBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         chat = viewModel.getCurrentChat()
-        val isNotGroup = chat.users.split("%").size <= 2
         adapter = ChatAdapter(
-            arrayListOf(),
-            selectedMessage,
-            isNotGroup,
+            this::imageViewer,
             this::onClickMessage,
-            this::onLongClickMessage,
-            this::imageViewer
+            this::onLongClickMessage
         )
+        adapter.isNotGroup(chat.users.split("%").size <= 2)
         binding.apply{
             chatMessageList.adapter = adapter
             chatSendMessage.setOnClickListener { onClickSend() }
@@ -72,6 +70,8 @@ class ChatFragment : Fragment() {
             }
             binding.chatMessageList.smoothScrollToPosition(adapter.itemCount)
         })
+        requireActivity().actionBar?.title = chat.chatName
+        requireActivity().actionBar?.subtitle = chat.toRef
         return (binding.root)
     }
     @SuppressLint("SimpleDateFormat")
@@ -126,30 +126,20 @@ class ChatFragment : Fragment() {
                 binding.chatInputText.text.clear()
                 cancelMedia()
                 binding.chatSendMessage.setBackgroundResource(R.drawable.btn_chat_send)
+                binding.chatSendMessage.setOnClickListener { onClickSend() }
             }
             .addOnCanceledListener {
                 Toast.makeText(requireContext(),getString(R.string.error_send),Toast.LENGTH_SHORT).show()
                 binding.chatSendMessage.setBackgroundResource(R.drawable.btn_chat_send)
+                binding.chatSendMessage.setOnClickListener { onClickSend() }
             }
     }
-    private fun onLongClickMessage(message: EntityMessage):Boolean{
-        if(selectedMessage.isEmpty()){
+    private fun onLongClickMessage(){
+        if(adapter.getSelected().isEmpty())
             setHasOptionsMenu(true)
-            if (selectedMessage.none { it == message })
-                selectedMessage.add(message)
-            else
-                selectedMessage.remove(message)
-        }
-        return true
     }
-    private fun onClickMessage(message: EntityMessage){
-        if(selectedMessage.isNotEmpty()){
-            if(selectedMessage.none { it == message })
-                selectedMessage.add(message)
-            else
-                selectedMessage.remove(message)
-        }
-        if(selectedMessage.isEmpty())
+    private fun onClickMessage(){
+        if(adapter.getSelected().isEmpty())
             setHasOptionsMenu(false)
     }
     private fun onClickAttach() {
@@ -180,12 +170,12 @@ class ChatFragment : Fragment() {
         }
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.chat_menu, menu)
+        inflater.inflate(R.menu.chat_selector_menu,menu)
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.copy -> {
-                val textToCopy = selectedMessage[0].text
+                val textToCopy = adapter.getSelected()[0].text
                 val clipboardManager = getSystemService(requireContext(),ClipboardManager::class.java) as ClipboardManager
                 val clipData = ClipData.newPlainText("text", textToCopy)
                 clipboardManager.setPrimaryClip(clipData)
@@ -194,6 +184,10 @@ class ChatFragment : Fragment() {
             }
             R.id.delete -> {
                 Log.d("delete","chat")
+                true
+            }
+            R.id.info -> {
+                findNavController().navigate(R.id.action_chatFragment_to_chatInfoFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

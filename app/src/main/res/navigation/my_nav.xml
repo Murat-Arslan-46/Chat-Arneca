@@ -17,6 +17,13 @@
             app:exitAnim="@anim/slide_in_down"
             app:popEnterAnim="@anim/slide_out_down"
             app:popExitAnim="@anim/slide_out_up" />
+        <action
+            android:id="@+id/action_mainFragment_to_userFragment"
+            app:destination="@id/userFragment"
+            app:enterAnim="@anim/slide_in_down"
+            app:exitAnim="@anim/slide_in_up"
+            app:popEnterAnim="@anim/slide_out_up"
+            app:popExitAnim="@anim/slide_out_down" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
@@ -30,10 +37,22 @@
             app:exitAnim="@anim/slide_in_down"
             app:popEnterAnim="@anim/slide_out_down"
             app:popExitAnim="@anim/slide_out_up" />
+        <action
+            android:id="@+id/action_chatFragment_to_userFragment"
+            app:destination="@id/userFragment"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/slide_in_down"
+            app:popEnterAnim="@anim/slide_out_down"
+            app:popExitAnim="@anim/slide_out_up" />
     </fragment>
     <fragment
         android:id="@+id/chatInfoFragment"
-        android:name="com.marslan.chatarneca.fragments.chat.ChatInfoFragment"
+        android:name="com.marslan.chatarneca.fragments.info.ChatInfoFragment"
         android:label="fragment_chat_info"
         tools:layout="@layout/fragment_chat_info" />
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.marslan.chatarneca.fragments.info.UserFragment"
+        android:label="fragment_user"
+        tools:layout="@layout/fragment_user" />
 </navigation>

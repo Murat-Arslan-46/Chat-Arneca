@@ -1,4 +1,4 @@
-package com.marslan.chatarneca.fragments.chat
+package com.marslan.chatarneca.fragments.info
 
 import android.annotation.SuppressLint
 import android.os.Bundle

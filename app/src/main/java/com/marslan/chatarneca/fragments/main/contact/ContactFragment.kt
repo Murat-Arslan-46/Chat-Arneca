@@ -62,22 +62,8 @@ class ContactFragment : Fragment() {
                 }
             }
         )
-        setHasOptionsMenu(true)
         binding.userList.adapter = adapter
         return binding.root
-    }override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.contact_menu, menu)
-        if (!viewModel.getGroupFlag())
-            menu.getItem(0).setVisible(false)
-    }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.contact_menu_create_chat -> {
-                newGroup()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
     private fun newChat(toRef: String) {
         val users = "${viewModel.getAuth().currentUser!!.uid}%$toRef"

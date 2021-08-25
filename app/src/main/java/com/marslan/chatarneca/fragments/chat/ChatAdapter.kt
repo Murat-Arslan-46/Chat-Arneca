@@ -20,18 +20,18 @@ import java.io.File
 import java.io.FileOutputStream
 
 class ChatAdapter(
-    private var currentList: List<EntityMessage>,
-    val selectedList: List<EntityMessage>,
-    private val isNotGroup: Boolean,
-    private val onClick: (EntityMessage) -> Unit,
-    private val onLongClick: (EntityMessage) -> Boolean,
-    private val imageViewer: (Uri) -> Unit
-    )
+    private val imageViewer: (Uri) -> Unit,
+    private val onClick: () -> Unit,
+    private val onLongClick: () -> Unit
+)
     :RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object{
         const val SEND = 1
         const val RECEIVE = 2
+        private var isNotGroup = false
+        private var currentList = arrayListOf<EntityMessage>()
+        private val selectedList = arrayListOf<EntityMessage>()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -45,6 +45,7 @@ class ChatAdapter(
     }
     fun getLastItem() = currentList.last()
     override fun getItemCount() = currentList.size
+
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(getItemViewType(position) == SEND){
@@ -62,31 +63,42 @@ class ChatAdapter(
     }
     @SuppressLint("NotifyDataSetChanged")
     fun setCurrentList(list: List<EntityMessage>){
-        currentList = list
+        currentList = list as ArrayList<EntityMessage>
         notifyDataSetChanged()
     }
+    fun isNotGroup(bool: Boolean){ isNotGroup = bool }
+    fun getSelected() = selectedList
 
     inner class SendMessageViewHolder(private val binding: ItemMessageSendBinding) :
         RecyclerView.ViewHolder(binding.root){
         fun bind(message: EntityMessage){
             binding.sendMessage.text = message.text
             binding.root.setOnLongClickListener {
+                onLongClick()
                 if(selectedList.isEmpty()){
-                    if (selectedList.none { it == message })
+                    if (selectedList.none { it == message }) {
                         binding.root.setBackgroundResource(R.color.secondary_color_visible)
-                    else
+                        selectedList.add(message)
+                    }
+                    else {
                         binding.root.setBackgroundColor(Color.TRANSPARENT)
+                        selectedList.remove(message)
+                    }
                 }
-                onLongClick(message)
+                true
             }
             binding.root.setOnClickListener {
                 if(selectedList.isNotEmpty()){
-                    if(selectedList.none { it == message })
+                    if (selectedList.none { it == message }) {
                         binding.root.setBackgroundResource(R.color.secondary_color_visible)
-                    else
+                        selectedList.add(message)
+                    }
+                    else {
                         binding.root.setBackgroundColor(Color.TRANSPARENT)
+                        selectedList.remove(message)
+                    }
                 }
-                onClick(message)
+                onClick()
             }
             binding.statusCheck.apply {
                 visibility =
@@ -129,22 +141,31 @@ class ChatAdapter(
             val message = currentList[position]
             binding.receiveMessage.text = message.text
             binding.root.setOnLongClickListener {
+                onLongClick()
                 if(selectedList.isEmpty()){
-                    if (selectedList.none { it == message })
+                    if (selectedList.none { it == message }) {
                         binding.root.setBackgroundResource(R.color.secondary_color_visible)
-                    else
+                        selectedList.add(message)
+                    }
+                    else {
                         binding.root.setBackgroundColor(Color.TRANSPARENT)
+                        selectedList.remove(message)
+                    }
                 }
-                onLongClick(message)
+                true
             }
             binding.root.setOnClickListener {
                 if(selectedList.isNotEmpty()){
-                    if(selectedList.none { it == message })
+                    if (selectedList.none { it == message }) {
                         binding.root.setBackgroundResource(R.color.secondary_color_visible)
-                    else
+                        selectedList.add(message)
+                    }
+                    else {
                         binding.root.setBackgroundColor(Color.TRANSPARENT)
+                        selectedList.remove(message)
+                    }
                 }
-                onClick(message)
+                onClick()
             }
             binding.receiveFromText.apply {
                 text = message.fromID

@@ -8,7 +8,9 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.marslan.chatarneca.R
 import com.marslan.chatarneca.databinding.FragmentMainBinding
+import com.marslan.chatarneca.fragments.chat.ChatFragment
 import com.marslan.chatarneca.fragments.main.contact.ContactFragment
 import com.marslan.chatarneca.fragments.main.group.GroupFragment
 import com.marslan.chatarneca.fragments.main.chatlist.ChatListFragment
@@ -27,6 +29,7 @@ class MainFragment : Fragment() {
     ): View {
         binding = FragmentMainBinding.inflate(inflater, container, false)
 
+        requireActivity().actionBar?.title = getString(R.string.app_name)
         val fragmentList = arrayListOf(
             ChatListFragment(),
             GroupFragment(),
