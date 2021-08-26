@@ -16,42 +16,51 @@ import com.google.firebase.database.ktx.getValue
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.EntityChat
 import com.marslan.chatarneca.data.User
-import com.marslan.chatarneca.databinding.FragmentChatInfoBinding
+import com.marslan.chatarneca.databinding.FragmentGroupInfoBinding
 import com.marslan.chatarneca.fragments.main.contact.ContactAdapter
 
-class ChatInfoFragment : Fragment() {
+class GroupInfoFragment : Fragment() {
 
-    private lateinit var binding: FragmentChatInfoBinding
-    private lateinit var viewModel: SharedViewModel
-    private var switch : Boolean = false
-    private lateinit var adapter: ContactAdapter
-    private lateinit var chat: EntityChat
-
-    @SuppressLint("FragmentLiveDataObserve")
+    companion object{
+        private lateinit var binding: FragmentGroupInfoBinding
+        private lateinit var viewModel: SharedViewModel
+        private var switch: Boolean = false
+        private lateinit var adapter: ContactAdapter
+        private lateinit var chat: EntityChat
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentChatInfoBinding.inflate(inflater,container,false)
+        binding = FragmentGroupInfoBinding.inflate(inflater,container,false)
         viewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
-        chat = viewModel.getCurrentChat()
-        adapter = ContactAdapter(arrayListOf(),this::clickUser)
-        binding.chatInfoNameInput.setText(viewModel.getCurrentChat().chatName)
-        binding.chatInfoChangeNameBtn.setOnClickListener { editName() }
-        binding.chatInfoAddUserBtn.setOnClickListener {
-            switch = binding.chatInfoAddUserBtn.isChecked
-            update()
+        chat = viewModel.getCurrentChat()!!
+        adapter = ContactAdapter(arrayListOf(),this::onClick)
+        binding.apply {
+            groupInfoNameInput.setText(chat.name)
+            groupInfoDescInput.setText(chat.description)
+            groupInfoChangeNameBtn.setOnClickListener { editName() }
+            groupInfoChangeDescBtn.setOnClickListener { editDescription() }
+            groupInfoAddUserBtn.setOnClickListener { update() }
+            groupInfoUsrlist.adapter = adapter
         }
         update()
-        binding.chatInfoUsrlist.adapter = adapter
         return (binding.root)
     }
-    private fun editName(){
-        chat.chatName = binding.chatInfoNameInput.text.toString()
+
+    private fun editDescription() {
+        chat.description = binding.groupInfoDescInput.text.toString()
         viewModel.updateChat(chat)
-        Toast.makeText(requireContext(),"change name ${chat.chatName}",Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(),"change description ${chat.name}",Toast.LENGTH_SHORT).show()
     }
+    private fun editName(){
+        chat.name = binding.groupInfoNameInput.text.toString()
+        viewModel.updateChat(chat)
+        Toast.makeText(requireContext(),"change name ${chat.name}",Toast.LENGTH_SHORT).show()
+    }
+
     private fun update(){
+        switch = binding.groupInfoAddUserBtn.isChecked
         viewModel.getFirebaseDatabase().getReference("users").addListenerForSingleValueEvent(
             object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {
@@ -59,14 +68,19 @@ class ChatInfoFragment : Fragment() {
                 }
                 @SuppressLint("NotifyDataSetChanged")
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var temp = arrayListOf<User>()
-                    val toID = chat.toRef.split("%")
+                    var allUsers = arrayListOf<User>()
+                    val chatUsers = chat.toRef.split("%")
                     if(snapshot.value != null) {
                         snapshot.getValue<ArrayList<User>>()?.let {
-                            temp = it
+                            allUsers = it
                         }
                     }
-                    temp.filter { toID.contains(it.id).xor(switch) }.apply {
+                    val currentList = arrayListOf<User>()
+                    chatUsers.forEach { user ->
+                        currentList.add(allUsers.filter { it.id == user }[0])
+                    }
+                    allUsers.filter { chatUsers.contains(it.id).xor(switch) }
+                        .apply {
                         adapter.currentList = this
                     }
                     adapter.notifyDataSetChanged()
@@ -90,7 +104,7 @@ class ChatInfoFragment : Fragment() {
         viewModel.updateChat(chat)
         Toast.makeText(requireContext(),"add user $id",Toast.LENGTH_SHORT).show()
     }
-    private fun clickUser(id: String){
+    private fun onClick(id: String){
         if(switch)
             addUser(id)
         else

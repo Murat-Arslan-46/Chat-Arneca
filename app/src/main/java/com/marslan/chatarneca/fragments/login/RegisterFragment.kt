@@ -85,7 +85,7 @@ class RegisterFragment: Fragment() {
                     binding.registerUserName.text.toString(),
                     binding.registerUserMail.text.toString(),
                     binding.registerPhone.text.toString(),
-                    arrayListOf(auth.uid.toString())
+                    listenerRef = arrayListOf(auth.uid.toString())
                 )
                 val firebase = Firebase.database
                 firebase.getReference("users").get().addOnSuccessListener{

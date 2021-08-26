@@ -8,51 +8,55 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.marslan.chatarneca.fragments.main.MainFragment"
-        android:label="@string/app_name"
         tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_chatFragment"
             app:destination="@id/chatFragment"
             app:enterAnim="@anim/slide_in_up"
-            app:exitAnim="@anim/slide_in_down"
-            app:popEnterAnim="@anim/slide_out_down"
+            app:exitAnim="@anim/slide_out_down"
+            app:popEnterAnim="@anim/slide_in_down"
             app:popExitAnim="@anim/slide_out_up" />
         <action
             android:id="@+id/action_mainFragment_to_userFragment"
             app:destination="@id/userFragment"
-            app:enterAnim="@anim/slide_in_down"
+            app:enterAnim="@anim/slide_out_down"
             app:exitAnim="@anim/slide_in_up"
             app:popEnterAnim="@anim/slide_out_up"
-            app:popExitAnim="@anim/slide_out_down" />
+            app:popExitAnim="@anim/slide_in_down" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
         android:name="com.marslan.chatarneca.fragments.chat.ChatFragment"
-        android:label="@string/app_name"
         tools:layout="@layout/fragment_chat">
         <action
-            android:id="@+id/action_chatFragment_to_chatInfoFragment"
-            app:destination="@id/chatInfoFragment"
-            app:enterAnim="@anim/slide_in_up"
-            app:exitAnim="@anim/slide_in_down"
-            app:popEnterAnim="@anim/slide_out_down"
-            app:popExitAnim="@anim/slide_out_up" />
+            android:id="@+id/action_chatFragment_to_groupInfoFragment"
+            app:destination="@id/groupInfoFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
             android:id="@+id/action_chatFragment_to_userFragment"
             app:destination="@id/userFragment"
             app:enterAnim="@anim/slide_in_up"
-            app:exitAnim="@anim/slide_in_down"
-            app:popEnterAnim="@anim/slide_out_down"
+            app:exitAnim="@anim/slide_out_down"
+            app:popEnterAnim="@anim/slide_in_down"
             app:popExitAnim="@anim/slide_out_up" />
     </fragment>
     <fragment
-        android:id="@+id/chatInfoFragment"
-        android:name="com.marslan.chatarneca.fragments.info.ChatInfoFragment"
-        android:label="fragment_chat_info"
-        tools:layout="@layout/fragment_chat_info" />
+        android:id="@+id/groupInfoFragment"
+        android:name="com.marslan.chatarneca.fragments.info.GroupInfoFragment"
+        tools:layout="@layout/fragment_group_info" >
+        <action
+            android:id="@+id/action_groupInfoFragment_to_userFragment"
+            app:destination="@id/userFragment"
+            app:enterAnim="@anim/slide_in_up"
+            app:exitAnim="@anim/slide_out_down"
+            app:popEnterAnim="@anim/slide_in_down"
+            app:popExitAnim="@anim/slide_out_up" />
+    </fragment>
     <fragment
         android:id="@+id/userFragment"
         android:name="com.marslan.chatarneca.fragments.info.UserFragment"
-        android:label="fragment_user"
         tools:layout="@layout/fragment_user" />
 </navigation>

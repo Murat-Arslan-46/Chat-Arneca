@@ -36,10 +36,7 @@ class ContactFragment : Fragment() {
         binding = FragmentContactBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         users = arrayListOf()
-        adapter = if(!viewModel.getGroupFlag())
-                    ContactAdapter(arrayListOf(),this::newChat)
-                else
-                    ContactAdapter(arrayListOf(),this::selectUser)
+        adapter = ContactAdapter(arrayListOf(),this::newChat)
         viewModel.getFirebaseDatabase().getReference("users").addListenerForSingleValueEvent(
             object : ValueEventListener{
                 override fun onCancelled(error: DatabaseError) {
@@ -69,7 +66,7 @@ class ContactFragment : Fragment() {
         val users = "${viewModel.getAuth().currentUser!!.uid}%$toRef"
         val randID = (1000..9999).random()
         val name = "chat"
-        var chat = EntityChat(randID, name, toRef, users)
+        var chat = EntityChat(randID, name, toRef, users,"hi!")
         viewModel.getAllChat().value?.forEach {
             val list = it.users.split("%")
             if (list.size <=2 && (list[0] == toRef || list[1] == toRef))
@@ -92,7 +89,7 @@ class ContactFragment : Fragment() {
         users.forEach { userList += "%$it" }
         val randID = (1000..9999).random()
         val name = "chat"
-        var chat = EntityChat(randID, name, randID.toString(), userList)
+        var chat = EntityChat(randID, name, randID.toString(), userList,"hi!")
         if(users.size < 2) {
             viewModel.getAllChat().value?.forEach {
                 val list = it.users.split("%")

@@ -31,7 +31,7 @@ class ChatListFragment : Fragment() {
         adapter = ChatListAdapter (listOf(), listOf(),this::openChat,this::deleteChat)
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         auth = viewModel.getAuth()
-        viewModel.getAllChatWithLastMessage().observe(viewLifecycleOwner,{
+        viewModel.getMessageLastForChatList().observe(viewLifecycleOwner,{
             adapter.currentList = it
             adapter.notifyDataSetChanged()
         })

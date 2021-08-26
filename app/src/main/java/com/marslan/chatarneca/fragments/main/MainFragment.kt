@@ -66,7 +66,7 @@ class MainFragment : Fragment() {
                 }, 10)
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                Handler(Looper.getMainLooper()).postDelayed({tab?.text = ""},100)
+                Handler(Looper.getMainLooper()).postDelayed({tab?.text = ""},15)
             }
         })
         return binding.root

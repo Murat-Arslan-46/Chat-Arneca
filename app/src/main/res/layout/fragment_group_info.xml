@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.info.GroupInfoFragment">
+
+    <ImageView
+        android:id="@+id/group_info_image"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:contentDescription="group_image"
+        android:src="@drawable/ic_list_group"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ImageContrastCheck" />
+
+    <TextView
+        android:id="@+id/group_info_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="Chat Name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/group_info_image" />
+
+    <EditText
+        android:id="@+id/group_info_name_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:hint="Chat Name"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="@+id/group_info_name_text"
+        app:layout_constraintTop_toBottomOf="@+id/group_info_name_text"
+        tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
+
+    <Button
+        android:id="@+id/group_info_change_name_btn"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="edit"
+        app:layout_constraintBottom_toBottomOf="@+id/group_info_name_input"
+        app:layout_constraintStart_toEndOf="@+id/group_info_name_input"
+        app:layout_constraintTop_toTopOf="@+id/group_info_name_text"
+        tools:ignore="DuplicateSpeakableTextCheck" />
+
+    <TextView
+        android:id="@+id/group_info_desc_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="Chat Description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/group_info_name_input" />
+
+    <EditText
+        android:id="@+id/group_info_desc_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:hint="Chat Description"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:singleLine="true"
+        app:layout_constraintStart_toStartOf="@+id/group_info_desc_text"
+        app:layout_constraintTop_toBottomOf="@+id/group_info_desc_text"
+        tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
+    <Button
+        android:id="@+id/group_info_change_desc_btn"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="edit"
+        app:layout_constraintBottom_toBottomOf="@+id/group_info_desc_input"
+        app:layout_constraintStart_toEndOf="@+id/group_info_desc_input"
+        app:layout_constraintTop_toTopOf="@+id/group_info_desc_text" />
+
+    <TextView
+        android:id="@+id/group_info_userlist_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Users"
+        app:layout_constraintStart_toStartOf="@+id/group_info_desc_input"
+        app:layout_constraintTop_toBottomOf="@+id/group_info_desc_input" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/group_info_usrlist"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/group_info_userlist_text"
+        app:layout_constraintTop_toBottomOf="@+id/group_info_userlist_text"
+        tools:listitem="@layout/item_chat_list" />
+
+    <Switch
+        android:id="@+id/group_info_add_user_btn"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        app:layout_constraintBottom_toBottomOf="@+id/group_info_userlist_text"
+        app:layout_constraintEnd_toEndOf="@+id/group_info_change_desc_btn"
+        app:layout_constraintStart_toEndOf="@+id/group_info_desc_input"
+        app:layout_constraintTop_toTopOf="@+id/group_info_userlist_text"
+        app:layout_constraintVertical_bias="0.551"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <TextView
+        android:id="@+id/group_info_add_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="+"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/group_info_add_user_btn"
+        app:layout_constraintStart_toEndOf="@+id/group_info_add_user_btn"
+        app:layout_constraintTop_toTopOf="@+id/group_info_add_user_btn" />
+
+    <TextView
+        android:id="@+id/group_info_remove_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="-"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/group_info_add_user_btn"
+        app:layout_constraintEnd_toStartOf="@+id/group_info_add_user_btn"
+        app:layout_constraintTop_toTopOf="@+id/group_info_add_user_btn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

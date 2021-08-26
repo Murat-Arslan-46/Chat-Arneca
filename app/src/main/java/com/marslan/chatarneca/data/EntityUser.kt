@@ -9,5 +9,8 @@ data class EntityUser(
     val id : String,
     val name: String,
     val mail: String,
-    val phone: String
+    val phone: String,
+    val imageSrc: String,
+    val userName: String,
+    val description: String,
 )

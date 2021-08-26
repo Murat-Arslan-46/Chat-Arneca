@@ -7,8 +7,9 @@ import androidx.room.PrimaryKey
 data class EntityChat(
     @PrimaryKey(autoGenerate = true)
     val id: Int = -1,
-    var chatName: String = "chat",
-    val toRef: String = "null",
-    var users: String = "null",
+    var name: String,
+    val toRef: String,
+    var users: String,
+    var description: String,
     var manager: Boolean = false
 )

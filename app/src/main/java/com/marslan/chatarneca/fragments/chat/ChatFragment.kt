@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.tasks.Task
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.marslan.chatarneca.R
@@ -47,7 +46,7 @@ class ChatFragment : Fragment() {
     ): View {
         binding = FragmentChatBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
-        chat = viewModel.getCurrentChat()
+        chat = viewModel.getCurrentChat()!!
         adapter = ChatAdapter(
             this::imageViewer,
             this::onClickMessage,
@@ -70,7 +69,7 @@ class ChatFragment : Fragment() {
             }
             binding.chatMessageList.smoothScrollToPosition(adapter.itemCount)
         })
-        requireActivity().actionBar?.title = chat.chatName
+        requireActivity().actionBar?.title = chat.name
         requireActivity().actionBar?.subtitle = chat.toRef
         return (binding.root)
     }
@@ -170,7 +169,7 @@ class ChatFragment : Fragment() {
         }
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.chat_selector_menu,menu)
+        inflater.inflate(R.menu.chat_menu,menu)
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
@@ -187,7 +186,7 @@ class ChatFragment : Fragment() {
                 true
             }
             R.id.info -> {
-                findNavController().navigate(R.id.action_chatFragment_to_chatInfoFragment)
+                findNavController().navigate(R.id.action_chatFragment_to_groupInfoFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

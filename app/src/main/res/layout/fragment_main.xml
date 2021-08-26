@@ -24,15 +24,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:tabGravity="fill"
-        app:tabIndicator="@drawable/background_input_box"
+        app:tabIndicator="@drawable/background_tab_box"
         app:tabIndicatorAnimationMode="linear"
-        app:tabIndicatorColor="?attr/colorOnSecondary"
+        app:tabIndicatorColor="?attr/colorPrimary"
         app:tabIndicatorFullWidth="true"
         app:tabIndicatorGravity="top"
         app:tabIndicatorHeight="100dp"
         app:tabInlineLabel="false"
         app:tabMode="fixed"
         app:tabTextAppearance="@style/TextAppearance.AppCompat.Small"
-        app:tabTextColor="?attr/colorPrimary"/>
+        app:tabTextColor="?attr/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

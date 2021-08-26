@@ -49,20 +49,21 @@ class MainActivity : AppCompatActivity() {
                                     .addChildEventListener(listener())
                         }
                     }
-                    else {
-                        viewModel.updateUser(
-                            EntityUser(
-                                user.id,
-                                user.name,
-                                user.mail,
-                                user.phone
-                            )
+                    viewModel.updateUser(
+                        EntityUser(
+                            user.id,
+                            user.name,
+                            user.mail,
+                            user.phone,
+                            user.imageSrc,
+                            user.userName,
+                            "hi!"
                         )
-                    }
+                    )
                 }
             }
         }
-        viewModel.getAllMessage().observe(this,{
+        viewModel.getMessageWithSendFalse().observe(this,{
             it.forEach { message ->
                 if(!message.send){
                     listener = viewModel.getFirebaseDatabase()
@@ -148,16 +149,14 @@ class MainActivity : AppCompatActivity() {
                 if(snapshot.value != null) {
                     val message = snapshot.getValue<EntityMessage>()
                     if (message != null) {
-                        viewModel.newMessage(message)
-                        if(message.fromID == "-1") //system message
-                        {
+                        if(message.fromID == "-1"){
                             viewModel.getFirebaseDatabase()
-                                .getReference(message.text).addChildEventListener(listener())
+                                .getReference(message.chatID.toString()).addChildEventListener(listener())
                         }
                         else{
-                            viewModel.checkMessageIsNew(message)
                             notification(message)
                         }
+                        viewModel.newMessage(message)
                         viewModel.getFirebaseDatabase()
                             .getReference(viewModel.getAuth().currentUser!!.uid)
                             .setValue(null)

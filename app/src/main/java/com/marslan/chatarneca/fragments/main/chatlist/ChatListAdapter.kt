@@ -36,7 +36,7 @@ class ChatListAdapter(
         @SuppressLint("SimpleDateFormat")
         fun bind(position: Int, clickListener: (EntityChat) -> Unit, longClickListener: (EntityChat) -> Boolean) {
             val message = currentList[position]
-            var chat = EntityChat()
+            var chat = EntityChat(1,"","","","",false)
             chatList.forEach {
                 if(it.id == message.chatID){
                     chat = it
@@ -58,7 +58,7 @@ class ChatListAdapter(
                 binding.chatText.setTypeface(binding.chatName.typeface,Typeface.BOLD)
             else
                 binding.chatText.setTypeface(binding.chatName.typeface,Typeface.NORMAL)
-            binding.chatName.text = chat.chatName
+            binding.chatName.text = chat.name
             binding.root.setOnClickListener { clickListener(chat) }
             binding.root.setOnLongClickListener { longClickListener(chat) }
         }
