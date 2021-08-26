@@ -7,5 +7,6 @@ data class User(
     val phone: String = "phone",
     val imageSrc: String = "null",
     val userName: String = "username",
+    val description: String = "hi ;)",
     val listenerRef: ArrayList<String> = arrayListOf()
 )

@@ -68,6 +68,7 @@ class ChatAdapter(
     }
     fun isNotGroup(bool: Boolean){ isNotGroup = bool }
     fun getSelected() = selectedList
+    fun clearSelect(){ selectedList.clear() }
 
     inner class SendMessageViewHolder(private val binding: ItemMessageSendBinding) :
         RecyclerView.ViewHolder(binding.root){

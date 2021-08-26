@@ -21,6 +21,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     private val auth : FirebaseAuth
     private val db : FirebaseDatabase
     private var chat : EntityChat?
+    private var user : EntityUser?
     private var userIndex : Int
     private var appDir: File
     init {
@@ -30,6 +31,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
         db = Firebase.database
         repository = SharedRepository(messageDao)
         chat = null
+        user = null
         appDir = Environment.getExternalStorageDirectory()
     }
     fun getAuth() = auth
@@ -38,6 +40,12 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
 
     fun getCurrentChat() = chat
     fun setCurrentChat(newChat: EntityChat){ chat = newChat }
+    fun getCurrentUser() = user
+    fun setCurrentUser(id: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            user = repository.getUser(id)[0]
+        }
+    }
 
     fun updateMessage(entityMessage: EntityMessage){
         viewModelScope.launch(Dispatchers.IO) { repository.updateMessage(entityMessage) }
@@ -164,7 +172,6 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     fun updateUser(user: EntityUser){
         viewModelScope.launch(Dispatchers.IO) { repository.updateUser(user) }
     }
-    fun getCurrentUser() = repository.getUser(auth.uid.toString())
     fun getUsers() = repository.getUsers
 
     fun setAppDir(file: File){appDir = file}

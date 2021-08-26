@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                             user.phone,
                             user.imageSrc,
                             user.userName,
-                            "hi!"
+                            user.description
                         )
                     )
                 }

@@ -192,4 +192,9 @@ class ChatFragment : Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    override fun onPause() {
+        adapter.clearSelect()
+        super.onPause()
+    }
 }

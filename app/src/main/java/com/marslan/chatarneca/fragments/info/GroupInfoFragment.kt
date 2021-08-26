@@ -9,12 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
+import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.EntityChat
+import com.marslan.chatarneca.data.EntityUser
 import com.marslan.chatarneca.data.User
 import com.marslan.chatarneca.databinding.FragmentGroupInfoBinding
 import com.marslan.chatarneca.fragments.main.contact.ContactAdapter
@@ -27,6 +30,7 @@ class GroupInfoFragment : Fragment() {
         private var switch: Boolean = false
         private lateinit var adapter: ContactAdapter
         private lateinit var chat: EntityChat
+        private lateinit var users: List<EntityUser>
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +48,20 @@ class GroupInfoFragment : Fragment() {
             groupInfoAddUserBtn.setOnClickListener { update() }
             groupInfoUsrlist.adapter = adapter
         }
-        update()
+        users = listOf()
+        viewModel.getUsers().observe(requireActivity(),{list->
+            val allUsers = arrayListOf<EntityUser>()
+            list.forEach { allUsers.add(it) }
+            users = allUsers
+            update()
+        })
+        if((chat.users.split("%").size <= 2) || !chat.manager){
+            binding.apply {
+                groupInfoAddUser.visibility = View.GONE
+                groupInfoAddUserBtn.visibility = View.GONE
+                groupInfoRemoveUser.visibility = View.GONE
+            }
+        }
         return (binding.root)
     }
 
@@ -59,41 +76,34 @@ class GroupInfoFragment : Fragment() {
         Toast.makeText(requireContext(),"change name ${chat.name}",Toast.LENGTH_SHORT).show()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun update(){
         switch = binding.groupInfoAddUserBtn.isChecked
-        viewModel.getFirebaseDatabase().getReference("users").addListenerForSingleValueEvent(
-            object : ValueEventListener {
-                override fun onCancelled(error: DatabaseError) {
-                    Log.d("get failed","user list")
-                }
-                @SuppressLint("NotifyDataSetChanged")
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    var allUsers = arrayListOf<User>()
-                    val chatUsers = chat.toRef.split("%")
-                    if(snapshot.value != null) {
-                        snapshot.getValue<ArrayList<User>>()?.let {
-                            allUsers = it
-                        }
-                    }
-                    val currentList = arrayListOf<User>()
-                    chatUsers.forEach { user ->
-                        currentList.add(allUsers.filter { it.id == user }[0])
-                    }
-                    allUsers.filter { chatUsers.contains(it.id).xor(switch) }
-                        .apply {
-                        adapter.currentList = this
-                    }
-                    adapter.notifyDataSetChanged()
-                }
+        val chatUsers = chat.users.split("%")
+        if(!switch){
+            val currentList = arrayListOf<EntityUser>()
+            chatUsers.forEach { user ->
+                currentList.add(users.filter { it.id == user }[0])
             }
-        )
+            adapter.currentList = currentList
+        }
+        else{
+            val currentList = arrayListOf<EntityUser>()
+            users.forEach { currentList.add(it) }
+            chatUsers.forEach { user ->
+                currentList.remove(users.filter { it.id == user }[0])
+            }
+            adapter.currentList = currentList
+        }
+        adapter.notifyDataSetChanged()
     }
+
     private fun deleteUser(id: String) {
         val toID = chat.users.split("%")
-        var temp = "%${viewModel.getAuth().currentUser!!.uid}"
-        toID.forEach {
-            if(it != id)
-                temp += "%$it"
+        var temp = viewModel.getAuth().currentUser!!.uid
+        toID.forEach {to_ID->
+            if(to_ID != id && toID.none { it == id })
+                temp += "%$id"
         }
         chat.users = temp
         viewModel.updateChat(chat)
@@ -105,9 +115,15 @@ class GroupInfoFragment : Fragment() {
         Toast.makeText(requireContext(),"add user $id",Toast.LENGTH_SHORT).show()
     }
     private fun onClick(id: String){
-        if(switch)
-            addUser(id)
-        else
-            deleteUser(id)
+        if(chat.manager) {
+            if (switch)
+                addUser(id)
+            else
+                deleteUser(id)
+        }
+        else{
+            viewModel.setCurrentUser(id)
+            findNavController().navigate(R.id.action_groupInfoFragment_to_userFragment)
+        }
     }
 }

@@ -2,31 +2,25 @@ package com.marslan.chatarneca.fragments.main.contact
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
 import com.marslan.chatarneca.R
-import com.marslan.chatarneca.data.SharedViewModel
-import com.marslan.chatarneca.data.EntityChat
-import com.marslan.chatarneca.data.EntityMessage
-import com.marslan.chatarneca.data.User
+import com.marslan.chatarneca.data.*
 import com.marslan.chatarneca.databinding.FragmentContactBinding
-import java.lang.Exception
 import kotlin.collections.ArrayList
 
 class ContactFragment : Fragment() {
 
-    private lateinit var binding: FragmentContactBinding
-    private lateinit var viewModel: SharedViewModel
-    private lateinit var adapter: ContactAdapter
-    private lateinit var users: ArrayList<String>
+    companion object {
+        private lateinit var binding: FragmentContactBinding
+        private lateinit var viewModel: SharedViewModel
+        private lateinit var adapter: ContactAdapter
+        private lateinit var users: ArrayList<String>
+    }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,40 +30,28 @@ class ContactFragment : Fragment() {
         binding = FragmentContactBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         users = arrayListOf()
-        adapter = ContactAdapter(arrayListOf(),this::newChat)
-        viewModel.getFirebaseDatabase().getReference("users").addListenerForSingleValueEvent(
-            object : ValueEventListener{
-                override fun onCancelled(error: DatabaseError) {
-                    Log.d("get failed","user list")
-                }
-                @SuppressLint("NotifyDataSetChanged")
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if(snapshot.value != null)
-                        snapshot.getValue<ArrayList<User>>()?.apply {
-                            val temp = arrayListOf<User>()
-                            this.forEach {
-                                try {
-                                    if (it.id != viewModel.getAuth().currentUser!!.uid)
-                                        temp.add(it)
-                                }catch (e : Exception){}
-                            }
-                            adapter.currentList = temp
-                            adapter.notifyDataSetChanged()
-                        }
-                }
+        adapter = ContactAdapter(arrayListOf(),this::onClick)
+        viewModel.getUsers().observe(requireActivity(),{ list->
+            val users = arrayListOf<EntityUser>()
+            list.forEach {
+                if(it.id != viewModel.getAuth().uid.toString())
+                    users.add(it)
             }
-        )
+            adapter.currentList = users
+            adapter.notifyDataSetChanged()
+        })
         binding.userList.adapter = adapter
         return binding.root
     }
-    private fun newChat(toRef: String) {
-        val users = "${viewModel.getAuth().currentUser!!.uid}%$toRef"
+
+    private fun onClick(id: String) {
+        val users = "${viewModel.getAuth().currentUser!!.uid}%$id"
         val randID = (1000..9999).random()
         val name = "chat"
-        var chat = EntityChat(randID, name, toRef, users,"hi!")
+        var chat = EntityChat(randID, name, id, users,"hi!")
         viewModel.getAllChat().value?.forEach {
             val list = it.users.split("%")
-            if (list.size <=2 && (list[0] == toRef || list[1] == toRef))
+            if (list.size <=2 && (list[0] == id || list[1] == id))
                 chat = it
         }
         viewModel.setCurrentChat(chat)
