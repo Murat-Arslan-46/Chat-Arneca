@@ -69,13 +69,16 @@ class ChatFragment : Fragment() {
             }
             binding.chatMessageList.smoothScrollToPosition(adapter.itemCount)
         })
-        requireActivity().actionBar?.title = chat.name
-        requireActivity().actionBar?.subtitle = chat.toRef
+        requireActivity().title = chat.name
         return (binding.root)
     }
+
     @SuppressLint("SimpleDateFormat")
     private fun onClickSend() {
+        if(binding.chatInputText.text.isEmpty() && !attachMedia)
+            return
         binding.chatSendMessage.setBackgroundResource(R.drawable.ic_waiting)
+        binding.chatSendMessage.setOnClickListener {  }
         val id =
         if(adapter.itemCount != 0)
             (((adapter.getLastItem().id/10000)+1)*10000) + chat.id
@@ -84,10 +87,9 @@ class ChatFragment : Fragment() {
         val text = binding.chatInputText.text.toString()
         val date = SimpleDateFormat("dd/MM/yy HH:mm").format(Date())
         val fromID = viewModel.getAuth().uid.toString()
-        val message = EntityMessage(id,text,date,fromID,chat.id,media = attachMedia)
-        message.ref = viewModel.getFirebaseDatabase()
+        val ref = viewModel.getFirebaseDatabase()
             .getReference(chat.toRef).push().key.toString()
-
+        val message = EntityMessage(id,text,date,fromID,chat.id,ref = ref,media = attachMedia)
         if(attachMedia){
             Firebase.storage
             .getReference("${message.chatID}/${message.id}.jpg").putFile(media!!)
@@ -186,7 +188,8 @@ class ChatFragment : Fragment() {
                 true
             }
             R.id.info -> {
-                findNavController().navigate(R.id.action_chatFragment_to_groupInfoFragment)
+                adapter.clearSelect()
+                findNavController().navigate(R.id.action_chatFragment_to_chatInfoFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.info.GroupInfoFragment">
+    tools:context=".fragments.info.ChatInfoFragment">
 
     <ImageView
-        android:id="@+id/group_info_image"
+        android:id="@+id/chat_info_image"
         android:layout_width="0dp"
         android:layout_height="200dp"
         android:contentDescription="group_image"
@@ -18,16 +18,16 @@
         tools:ignore="ImageContrastCheck" />
 
     <TextView
-        android:id="@+id/group_info_name_text"
+        android:id="@+id/chat_info_name_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:text="Chat Name"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_info_image" />
+        app:layout_constraintTop_toBottomOf="@+id/chat_info_image" />
 
     <EditText
-        android:id="@+id/group_info_name_input"
+        android:id="@+id/chat_info_name_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -36,34 +36,34 @@
         android:importantForAutofill="no"
         android:inputType="text"
         android:singleLine="true"
-        app:layout_constraintStart_toStartOf="@+id/group_info_name_text"
-        app:layout_constraintTop_toBottomOf="@+id/group_info_name_text"
+        app:layout_constraintStart_toStartOf="@+id/chat_info_name_text"
+        app:layout_constraintTop_toBottomOf="@+id/chat_info_name_text"
         tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
 
     <Button
-        android:id="@+id/group_info_change_name_btn"
+        android:id="@+id/chat_info_change_name_btn"
         style="@style/Widget.AppCompat.Button.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:text="edit"
-        app:layout_constraintBottom_toBottomOf="@+id/group_info_name_input"
+        app:layout_constraintBottom_toBottomOf="@+id/chat_info_name_input"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/group_info_name_input"
-        app:layout_constraintTop_toTopOf="@+id/group_info_name_text"
+        app:layout_constraintStart_toEndOf="@+id/chat_info_name_input"
+        app:layout_constraintTop_toTopOf="@+id/chat_info_name_text"
         tools:ignore="DuplicateSpeakableTextCheck" />
 
     <TextView
-        android:id="@+id/group_info_desc_text"
+        android:id="@+id/chat_info_desc_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:text="Chat Description"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/group_info_name_input" />
+        app:layout_constraintTop_toBottomOf="@id/chat_info_name_input" />
 
     <EditText
-        android:id="@+id/group_info_desc_input"
+        android:id="@+id/chat_info_desc_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -72,75 +72,75 @@
         android:importantForAutofill="no"
         android:inputType="text"
         android:singleLine="true"
-        app:layout_constraintStart_toStartOf="@+id/group_info_desc_text"
-        app:layout_constraintTop_toBottomOf="@+id/group_info_desc_text"
+        app:layout_constraintStart_toStartOf="@+id/chat_info_desc_text"
+        app:layout_constraintTop_toBottomOf="@+id/chat_info_desc_text"
         tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
 
     <Button
-        android:id="@+id/group_info_change_desc_btn"
+        android:id="@+id/chat_info_change_desc_btn"
         style="@style/Widget.AppCompat.Button.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="edit"
-        app:layout_constraintBottom_toBottomOf="@+id/group_info_desc_input"
-        app:layout_constraintEnd_toEndOf="@+id/group_info_change_name_btn"
-        app:layout_constraintTop_toTopOf="@+id/group_info_desc_text" />
+        app:layout_constraintBottom_toBottomOf="@+id/chat_info_desc_input"
+        app:layout_constraintEnd_toEndOf="@+id/chat_info_change_name_btn"
+        app:layout_constraintTop_toTopOf="@+id/chat_info_desc_text" />
 
     <TextView
-        android:id="@+id/group_info_userlist_text"
+        android:id="@+id/chat_info_userlist_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="16dp"
         android:text="Users"
-        app:layout_constraintBottom_toTopOf="@+id/group_info_usrlist"
-        app:layout_constraintStart_toStartOf="@+id/group_info_desc_input"
-        app:layout_constraintTop_toBottomOf="@id/group_info_desc_input" />
+        app:layout_constraintBottom_toTopOf="@+id/chat_info_usrlist"
+        app:layout_constraintStart_toStartOf="@+id/chat_info_desc_input"
+        app:layout_constraintTop_toBottomOf="@id/chat_info_desc_input" />
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/group_info_usrlist"
+        android:id="@+id/chat_info_usrlist"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/group_info_change_name_btn"
-        app:layout_constraintStart_toStartOf="@+id/group_info_userlist_text"
-        app:layout_constraintTop_toBottomOf="@+id/group_info_userlist_text"
+        app:layout_constraintEnd_toEndOf="@+id/chat_info_change_name_btn"
+        app:layout_constraintStart_toStartOf="@+id/chat_info_userlist_text"
+        app:layout_constraintTop_toBottomOf="@+id/chat_info_userlist_text"
         tools:listitem="@layout/item_chat_list" />
 
     <Switch
-        android:id="@+id/group_info_add_user_btn"
+        android:id="@+id/chat_info_add_user_btn"
         style="@style/Widget.AppCompat.Button.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:checked="false"
-        app:layout_constraintEnd_toStartOf="@+id/group_info_add_user"
-        app:layout_constraintTop_toBottomOf="@id/group_info_change_desc_btn"
+        app:layout_constraintEnd_toStartOf="@+id/chat_info_add_user"
+        app:layout_constraintTop_toBottomOf="@id/chat_info_change_desc_btn"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     <TextView
-        android:id="@+id/group_info_add_user"
+        android:id="@+id/chat_info_add_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="+"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/group_info_add_user_btn"
-        app:layout_constraintEnd_toEndOf="@+id/group_info_change_desc_btn"
-        app:layout_constraintTop_toTopOf="@+id/group_info_add_user_btn" />
+        app:layout_constraintBottom_toBottomOf="@+id/chat_info_add_user_btn"
+        app:layout_constraintEnd_toEndOf="@+id/chat_info_change_desc_btn"
+        app:layout_constraintTop_toTopOf="@+id/chat_info_add_user_btn" />
 
     <TextView
-        android:id="@+id/group_info_remove_user"
+        android:id="@+id/chat_info_remove_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="-"
         android:textColor="@color/black"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/group_info_add_user_btn"
-        app:layout_constraintEnd_toStartOf="@+id/group_info_add_user_btn"
-        app:layout_constraintTop_toTopOf="@+id/group_info_add_user_btn" />
+        app:layout_constraintBottom_toBottomOf="@+id/chat_info_add_user_btn"
+        app:layout_constraintEnd_toStartOf="@+id/chat_info_add_user_btn"
+        app:layout_constraintTop_toTopOf="@+id/chat_info_add_user_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

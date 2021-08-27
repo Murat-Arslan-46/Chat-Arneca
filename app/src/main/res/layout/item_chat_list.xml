@@ -6,16 +6,26 @@
     android:layout_height="wrap_content"
     android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/chat_image"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/chat_name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_list_person" />
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:cardBackgroundColor="?attr/colorOnSecondary"
+        app:cardCornerRadius="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/chat_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/app_background" />
+
+    </androidx.cardview.widget.CardView>
     <TextView
         android:id="@+id/chat_name"
         android:layout_width="0dp"
@@ -27,7 +37,7 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/chat_text"
         app:layout_constraintEnd_toStartOf="@+id/chat_date"
-        app:layout_constraintStart_toEndOf="@+id/chat_image"
+        app:layout_constraintStart_toEndOf="@+id/cardView2"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -42,7 +52,7 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/chat_name"
-        app:layout_constraintStart_toEndOf="@+id/chat_image"
+        app:layout_constraintStart_toEndOf="@+id/cardView2"
         app:layout_constraintTop_toBottomOf="@+id/chat_date" />
 
     <TextView
@@ -62,6 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:background="@color/primary_color"
         app:layout_constraintBottom_toBottomOf="parent"

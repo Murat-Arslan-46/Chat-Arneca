@@ -36,7 +36,7 @@ class ChatListAdapter(
         @SuppressLint("SimpleDateFormat")
         fun bind(position: Int, clickListener: (EntityChat) -> Unit, longClickListener: (EntityChat) -> Boolean) {
             val message = currentList[position]
-            var chat = EntityChat(1,"","","","",false)
+            var chat = EntityChat(1, "", "", "", "", manager = false)
             chatList.forEach {
                 if(it.id == message.chatID){
                     chat = it

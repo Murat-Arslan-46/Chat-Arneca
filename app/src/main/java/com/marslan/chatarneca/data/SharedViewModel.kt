@@ -72,7 +72,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
             }
         }
     }
-    fun checkMessageIsNew(message: EntityMessage){
+    fun checkPointNewMessage(message: EntityMessage){
         viewModelScope.launch(Dispatchers.IO) {
             val list = repository.getMessage(message.ref)
             if (message.fromID != auth.uid) {
@@ -85,7 +85,6 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
                     .push().setValue(auth.currentUser!!.uid)
             }
         }
-
     }
     fun newMessage(entityMessage: EntityMessage){
         when (entityMessage.fromID) {
@@ -93,54 +92,70 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
             auth.currentUser!!.uid -> {newMessageFromMe(entityMessage)}
             else -> {newMessageFromDifferentUser(entityMessage)}
         }
+        db.getReference(auth.currentUser!!.uid).setValue(null)
     }
     private fun newMessageFromMe(entityMessage: EntityMessage){
         viewModelScope.launch(Dispatchers.IO) {
             repository.newMessage(entityMessage)
-            val list = getAllChat().value
-            if(list == null || list.none { it.users == chat!!.users })
-                chat?.let { newChat(it) }
+            val list = getAllChat().value.orEmpty()
+            if(list.none { it.users == chat!!.users } || chat!!.id.toString() == chat!!.toRef)
+                chat?.let {
+                    repository.newChat(it)
+                    if(it.id.toString() == it.toRef){
+                        val message = EntityMessage(
+                            text = "${it.name}%${it.description}%${it.imageSrc}",
+                            date = it.users,
+                            fromID = "-1",
+                            chatID = it.id
+                        )
+                        it.users.split("%").forEach { id ->
+                            db.getReference(id).push().setValue(message)
+                        }
+                    }
+                }
         }
     }
     private fun newMessageFromSystem(entityMessage: EntityMessage){
-        val ref =db.getReference("users")
-            .child(userIndex.toString())
-            .child("listenerRef")
-        ref.get().addOnSuccessListener {
-            if(it.value != null){
-                var list = arrayListOf<String>()
-                if(it.getValue<ArrayList<String>>() != null)
-                    list = it.getValue<ArrayList<String>>()!!
-                list.add(entityMessage.chatID.toString())
-                ref.setValue(list)
-            }
-        }
-        newChat(
-            EntityChat(
+        viewModelScope.launch(Dispatchers.IO) {
+            val messageSplit = entityMessage.copy().text.split("%")
+            val temp = EntityChat(
                 entityMessage.chatID,
-                "group chat",
+                messageSplit[0],
                 entityMessage.chatID.toString(),
-                entityMessage.text,
-                "hi!"
+                entityMessage.date,
+                messageSplit[1],
+                messageSplit[2],
+                false
             )
-        )
+            repository.newChat(temp)
+        }
     }
     private fun newMessageFromDifferentUser(entityMessage: EntityMessage){
         viewModelScope.launch(Dispatchers.IO) {
             val message = entityMessage.copy()
-            message.fromID = repository.getUser(entityMessage.fromID)[0].name
+            val ref = message.fromID
+            val tempUser = repository.getUser(entityMessage.fromID)[0]
+            message.fromID = tempUser.name
             repository.newMessage(message)
-            val list = getAllChat().value
-            if(list == null || list.none { it.id == entityMessage.chatID }) {
-                val users = "${entityMessage.fromID}%${auth.currentUser!!.uid}"
+            val list = getAllChat().value.orEmpty()
+            if(list.none { it.id == entityMessage.chatID }) {
+                val users = "$ref%${auth.currentUser!!.uid}"
                 val id = entityMessage.chatID
-                val name = message.fromID
-                newChat(EntityChat(id, name, entityMessage.fromID, users,"hi!"))
+                val temp = EntityChat(
+                    id,
+                    tempUser.name,
+                    ref,
+                    users,
+                    tempUser.description,
+                    tempUser.imageSrc,
+                    false
+                )
+                repository.newChat(temp)
             }
             if(message.media){
                 val maxDownloadSizeBytes: Long = 1024 * 1024
-                val ref = FirebaseStorage.getInstance().reference
-                val firebaseRef = ref.child("${message.chatID}/${message.id}.jpg")
+                val imageRef = FirebaseStorage.getInstance().reference
+                val firebaseRef = imageRef.child("${message.chatID}/${message.id}.jpg")
                 firebaseRef.getBytes(maxDownloadSizeBytes).addOnSuccessListener {
                     if (it != null) {
                         val file = File(appDir, "${message.chatID}-${message.id}.jpg")
@@ -154,9 +169,6 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     }
 
     fun getAllChat() = repository.readAllChat
-    private fun newChat(entityChat: EntityChat){
-        viewModelScope.launch(Dispatchers.IO) { repository.newChat(entityChat) }
-    }
     fun deleteChat(entityChat: EntityChat){
         viewModelScope.launch(Dispatchers.IO) { repository.deleteChat(entityChat) }
     }

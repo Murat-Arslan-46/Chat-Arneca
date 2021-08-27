@@ -2,7 +2,6 @@ package com.marslan.chatarneca.fragments.info
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,22 +9,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
 import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.EntityChat
 import com.marslan.chatarneca.data.EntityUser
-import com.marslan.chatarneca.data.User
-import com.marslan.chatarneca.databinding.FragmentGroupInfoBinding
-import com.marslan.chatarneca.fragments.main.contact.ContactAdapter
+import com.marslan.chatarneca.databinding.FragmentChatInfoBinding
+import com.marslan.chatarneca.fragments.chat.ChatFragment
+import com.marslan.chatarneca.fragments.contact.ContactAdapter
 
-class GroupInfoFragment : Fragment() {
+class ChatInfoFragment : Fragment() {
 
     companion object{
-        private lateinit var binding: FragmentGroupInfoBinding
+        private lateinit var binding: FragmentChatInfoBinding
         private lateinit var viewModel: SharedViewModel
         private var switch: Boolean = false
         private lateinit var adapter: ContactAdapter
@@ -36,17 +31,17 @@ class GroupInfoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentGroupInfoBinding.inflate(inflater,container,false)
+        binding = FragmentChatInfoBinding.inflate(inflater,container,false)
         viewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         chat = viewModel.getCurrentChat()!!
-        adapter = ContactAdapter(arrayListOf(),this::onClick)
+        adapter = ContactAdapter(this::onClick)
         binding.apply {
-            groupInfoNameInput.setText(chat.name)
-            groupInfoDescInput.setText(chat.description)
-            groupInfoChangeNameBtn.setOnClickListener { editName() }
-            groupInfoChangeDescBtn.setOnClickListener { editDescription() }
-            groupInfoAddUserBtn.setOnClickListener { update() }
-            groupInfoUsrlist.adapter = adapter
+            chatInfoNameInput.setText(chat.name)
+            chatInfoDescInput.setText(chat.description)
+            chatInfoChangeNameBtn.setOnClickListener { editName() }
+            chatInfoChangeDescBtn.setOnClickListener { editDescription() }
+            chatInfoAddUserBtn.setOnClickListener { update() }
+            chatInfoUsrlist.adapter = adapter
         }
         users = listOf()
         viewModel.getUsers().observe(requireActivity(),{list->
@@ -57,35 +52,36 @@ class GroupInfoFragment : Fragment() {
         })
         if((chat.users.split("%").size <= 2) || !chat.manager){
             binding.apply {
-                groupInfoAddUser.visibility = View.GONE
-                groupInfoAddUserBtn.visibility = View.GONE
-                groupInfoRemoveUser.visibility = View.GONE
+                chatInfoAddUser.visibility = View.GONE
+                chatInfoAddUserBtn.visibility = View.GONE
+                chatInfoRemoveUser.visibility = View.GONE
             }
         }
+        requireActivity().title = chat.name
         return (binding.root)
     }
 
     private fun editDescription() {
-        chat.description = binding.groupInfoDescInput.text.toString()
+        chat.description = binding.chatInfoDescInput.text.toString()
         viewModel.updateChat(chat)
         Toast.makeText(requireContext(),"change description ${chat.name}",Toast.LENGTH_SHORT).show()
     }
     private fun editName(){
-        chat.name = binding.groupInfoNameInput.text.toString()
+        chat.name = binding.chatInfoNameInput.text.toString()
         viewModel.updateChat(chat)
         Toast.makeText(requireContext(),"change name ${chat.name}",Toast.LENGTH_SHORT).show()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun update(){
-        switch = binding.groupInfoAddUserBtn.isChecked
+        switch = binding.chatInfoAddUserBtn.isChecked
         val chatUsers = chat.users.split("%")
         if(!switch){
             val currentList = arrayListOf<EntityUser>()
             chatUsers.forEach { user ->
                 currentList.add(users.filter { it.id == user }[0])
             }
-            adapter.currentList = currentList
+            adapter.setCurrentList(currentList)
         }
         else{
             val currentList = arrayListOf<EntityUser>()
@@ -93,7 +89,7 @@ class GroupInfoFragment : Fragment() {
             chatUsers.forEach { user ->
                 currentList.remove(users.filter { it.id == user }[0])
             }
-            adapter.currentList = currentList
+            adapter.setCurrentList(currentList)
         }
         adapter.notifyDataSetChanged()
     }
@@ -114,7 +110,8 @@ class GroupInfoFragment : Fragment() {
         viewModel.updateChat(chat)
         Toast.makeText(requireContext(),"add user $id",Toast.LENGTH_SHORT).show()
     }
-    private fun onClick(id: String){
+    private fun onClick(user: EntityUser) {
+        val id = user.id
         if(chat.manager) {
             if (switch)
                 addUser(id)
@@ -123,7 +120,7 @@ class GroupInfoFragment : Fragment() {
         }
         else{
             viewModel.setCurrentUser(id)
-            findNavController().navigate(R.id.action_groupInfoFragment_to_userFragment)
+            findNavController().navigate(R.id.action_chatInfoFragment_to_userFragment)
         }
     }
 }

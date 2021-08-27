@@ -20,4 +20,5 @@
     <string name="chat">Chat</string>
     <string name="group">Group</string>
     <string name="error_send">check network and try again please</string>
+    <string name="firebaseUserRef">usertest</string>
 </resources>

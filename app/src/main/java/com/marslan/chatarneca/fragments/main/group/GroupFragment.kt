@@ -36,6 +36,9 @@ class GroupFragment : Fragment() {
             listAdapter.setCurrentList(list)
         })
         binding.groupList.adapter = listAdapter
+        binding.groupBtnNew.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_contactFragment)
+        }
         return binding.root
     }
 

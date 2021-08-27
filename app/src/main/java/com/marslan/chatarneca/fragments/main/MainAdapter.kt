@@ -15,16 +15,14 @@ class MainAdapter(
     private val fragmentList = list
 
     val title = listOf(
-        R.string.chat,
         R.string.group,
-        R.string.contact,
+        R.string.chat,
         R.string.home
     )
 
     val icon = listOf(
-        R.drawable.tab_ic_chat,
         R.drawable.tab_ic_group,
-        R.drawable.tab_ic_conact,
+        R.drawable.tab_ic_chat,
         R.drawable.tab_ic_home
     )
 

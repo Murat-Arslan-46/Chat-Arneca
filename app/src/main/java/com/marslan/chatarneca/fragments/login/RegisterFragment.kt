@@ -9,18 +9,24 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.marslan.chatarneca.MainActivity
+import com.marslan.chatarneca.R
+import com.marslan.chatarneca.data.EntityChat
+import com.marslan.chatarneca.data.EntityUser
+import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.User
 import com.marslan.chatarneca.databinding.FragmentRegisterBinding
 
 class RegisterFragment: Fragment() {
 
     private lateinit var binding: FragmentRegisterBinding
+    private lateinit var viewModel: SharedViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +34,7 @@ class RegisterFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentRegisterBinding.inflate(inflater,container,false)
-
+        viewModel = ViewModelProvider(this)[SharedViewModel::class.java]
         binding.registerSubmit.setOnClickListener {
             createUser(Firebase.auth)
         }
@@ -80,28 +86,20 @@ class RegisterFragment: Fragment() {
             binding.registerPassword.text.toString()
         ).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val user = User(
+                val user = EntityUser(
                     auth.uid.toString(),
                     binding.registerUserName.text.toString(),
                     binding.registerUserMail.text.toString(),
                     binding.registerPhone.text.toString(),
-                    listenerRef = arrayListOf(auth.uid.toString())
+                    "null",
+                    binding.registerUserMail.text.toString(),
+                    "hi there!"
                 )
-                val firebase = Firebase.database
-                firebase.getReference("users").get().addOnSuccessListener{
-                    if(it.value != null){
-                        var value = it.getValue<ArrayList<User>>()
-                        if(value != null)
-                            value.add(user)
-                        else
-                            value = arrayListOf(user)
-                        firebase.getReference("users").setValue(value)
+                Firebase.database.getReference(requireActivity().getString(R.string.firebaseUserRef)).child(user.id).setValue(user)
+                    .addOnSuccessListener {
+                        viewModel.newUser(user)
+                        openApp()
                     }
-                    else{
-                        firebase.getReference("users").setValue(arrayListOf(user))
-                    }
-                }
-                openApp()
             }
             else {
                 Toast.makeText(requireActivity(),task.exception.toString(), Toast.LENGTH_LONG).show()
