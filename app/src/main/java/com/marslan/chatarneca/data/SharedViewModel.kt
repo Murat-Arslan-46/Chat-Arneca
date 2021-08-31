@@ -22,11 +22,9 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     private val db : FirebaseDatabase
     private var chat : EntityChat?
     private var user : EntityUser?
-    private var userIndex : Int
     private var appDir: File
     init {
         val messageDao = SharedDatabase.getDatabase(application).messageDao()
-        userIndex = -1
         auth = Firebase.auth
         db = Firebase.database
         repository = SharedRepository(messageDao)
@@ -36,7 +34,6 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     }
     fun getAuth() = auth
     fun getFirebaseDatabase() = db
-    fun setUserIndex(index: Int){userIndex = index}
 
     fun getCurrentChat() = chat
     fun setCurrentChat(newChat: EntityChat){ chat = newChat }
@@ -53,6 +50,11 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
     fun getMessageWithSendFalse() = repository.getMessageWithSendFalse
     fun getMessageWithChatID(id: Int) = repository.getChatMessage(id)
     fun getMessageLastForChatList() = repository.getMessageLastForChatList
+    fun deleteMessage(message: EntityMessage){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteMessage(message)
+        }
+    }
     fun checkMessageSend(ref: String, count: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val list = repository.getMessage(ref)
@@ -79,7 +81,7 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
                 message.send = true
                 newMessage(message)
                 val ref = "${message.chatID}-${message.fromID}"
-                if(list.isEmpty())
+                if(list.isEmpty() && message.fromID != "-1")
                 db.getReference(ref)
                     .child(message.ref)
                     .push().setValue(auth.currentUser!!.uid)
@@ -92,42 +94,63 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
             auth.currentUser!!.uid -> {newMessageFromMe(entityMessage)}
             else -> {newMessageFromDifferentUser(entityMessage)}
         }
-        db.getReference(auth.currentUser!!.uid).setValue(null)
+        db.getReference(auth.uid.toString()).setValue(null)
     }
     private fun newMessageFromMe(entityMessage: EntityMessage){
         viewModelScope.launch(Dispatchers.IO) {
             repository.newMessage(entityMessage)
             val list = getAllChat().value.orEmpty()
-            if(list.none { it.users == chat!!.users } || chat!!.id.toString() == chat!!.toRef)
+            if(list.none { it.users == chat!!.users } || chat!!.id.toString() == chat!!.toRef) {
                 chat?.let {
                     repository.newChat(it)
-                    if(it.id.toString() == it.toRef){
+                    if (it.id.toString() == it.toRef) {
                         val message = EntityMessage(
                             text = "${it.name}%${it.description}%${it.imageSrc}",
                             date = it.users,
                             fromID = "-1",
-                            chatID = it.id
+                            chatID = it.id,
+                            ref = "-1"
                         )
                         it.users.split("%").forEach { id ->
-                            db.getReference(id).push().setValue(message)
+                            if(id != auth.uid.toString())
+                                db.getReference(id).push().setValue(message)
                         }
                     }
                 }
+            }
         }
     }
     private fun newMessageFromSystem(entityMessage: EntityMessage){
         viewModelScope.launch(Dispatchers.IO) {
-            val messageSplit = entityMessage.copy().text.split("%")
-            val temp = EntityChat(
-                entityMessage.chatID,
-                messageSplit[0],
-                entityMessage.chatID.toString(),
-                entityMessage.date,
-                messageSplit[1],
-                messageSplit[2],
-                false
-            )
-            repository.newChat(temp)
+            when(entityMessage.ref){
+                "-1" ->{
+                    val messageSplit = entityMessage.copy().text.split("%")
+                    val temp = EntityChat(
+                        entityMessage.chatID,
+                        messageSplit[0],
+                        entityMessage.chatID.toString(),
+                        entityMessage.date,
+                        messageSplit[1],
+                        messageSplit[2],
+                        false
+                    )
+                    repository.updateChat(temp)
+                } // new group
+                "-2" ->{
+                    val messageSplit = entityMessage.copy().text.split("%")
+                    val temp = EntityChat(
+                        entityMessage.chatID,
+                        messageSplit[0],
+                        entityMessage.chatID.toString(),
+                        entityMessage.date,
+                        messageSplit[1],
+                        messageSplit[2],
+                        false
+                    )
+                    leaveGroup(temp)
+                } // leave group
+            }
+
         }
     }
     private fun newMessageFromDifferentUser(entityMessage: EntityMessage){
@@ -170,11 +193,29 @@ class SharedViewModel(application: Application): AndroidViewModel(application) {
 
     fun getAllChat() = repository.readAllChat
     fun deleteChat(entityChat: EntityChat){
-        viewModelScope.launch(Dispatchers.IO) { repository.deleteChat(entityChat) }
+        viewModelScope.launch(Dispatchers.IO) {
+            if(entityChat.id.toString() != entityChat.toRef)
+                repository.deleteChat(entityChat)
+            repository.deleteMessageWithChat(entityChat.id)
+        }
     }
     fun updateChat(entityChat: EntityChat){
         viewModelScope.launch(Dispatchers.IO) {
             repository.updateChat(entityChat)
+        }
+    }
+    fun leaveGroup(entityChat: EntityChat){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateChat( EntityChat(
+                entityChat.id,
+                entityChat.name,
+                "0",
+                entityChat.users,
+                entityChat.description,
+                entityChat.imageSrc,
+                entityChat.manager
+            )
+            )
         }
     }
 

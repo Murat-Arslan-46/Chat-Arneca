@@ -65,7 +65,8 @@ class ContactFragment : Fragment() {
                     user.id,
                     userList,
                     user.description,
-                    user.imageSrc
+                    user.imageSrc,
+                    false
                 )
                 viewModel.getAllChat().value?.forEach {
                     val list = it.users.split("%")

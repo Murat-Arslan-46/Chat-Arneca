@@ -30,7 +30,6 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: SharedViewModel
-    private lateinit var listener: ChildEventListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +58,24 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    if(snapshot.value != null){
+                        val user = snapshot.getValue<User>()
+                        if(user != null){
+                            viewModel.updateUser(
+                                EntityUser(
+                                    user.id,
+                                    user.name,
+                                    user.mail,
+                                    user.phone,
+                                    user.imageSrc,
+                                    user.userName,
+                                    user.description
+                                )
+                            )
+                        }
+                    }
+                }
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
                 override fun onChildRemoved(snapshot: DataSnapshot) {}
             })
@@ -74,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.getMessageWithSendFalse().observe(this,{
             it.forEach { message ->
                 if(!message.send){
-                    listener = viewModel.getFirebaseDatabase()
+                    viewModel.getFirebaseDatabase()
                         .getReference("${message.chatID}-${message.fromID}")
                         .addChildEventListener(listenerStatus())
                 }

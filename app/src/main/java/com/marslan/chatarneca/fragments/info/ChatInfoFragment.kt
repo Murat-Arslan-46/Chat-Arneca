@@ -12,9 +12,9 @@ import androidx.navigation.fragment.findNavController
 import com.marslan.chatarneca.R
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.EntityChat
+import com.marslan.chatarneca.data.EntityMessage
 import com.marslan.chatarneca.data.EntityUser
 import com.marslan.chatarneca.databinding.FragmentChatInfoBinding
-import com.marslan.chatarneca.fragments.chat.ChatFragment
 import com.marslan.chatarneca.fragments.contact.ContactAdapter
 
 class ChatInfoFragment : Fragment() {
@@ -22,7 +22,6 @@ class ChatInfoFragment : Fragment() {
     companion object{
         private lateinit var binding: FragmentChatInfoBinding
         private lateinit var viewModel: SharedViewModel
-        private var switch: Boolean = false
         private lateinit var adapter: ContactAdapter
         private lateinit var chat: EntityChat
         private lateinit var users: List<EntityUser>
@@ -38,10 +37,14 @@ class ChatInfoFragment : Fragment() {
         binding.apply {
             chatInfoNameInput.setText(chat.name)
             chatInfoDescInput.setText(chat.description)
-            chatInfoChangeNameBtn.setOnClickListener { editName() }
-            chatInfoChangeDescBtn.setOnClickListener { editDescription() }
             chatInfoAddUserBtn.setOnClickListener { update() }
             chatInfoUsrlist.adapter = adapter
+            if(!chat.manager)
+                chatInfoManager.visibility = View.GONE
+            chatInfoManager.setOnClickListener { managerMode() }
+            if(chat.toRef != chat.id.toString())
+                chatInfoLeave.visibility = View.GONE
+            chatInfoLeave.setOnClickListener { leaveChat() }
         }
         users = listOf()
         viewModel.getUsers().observe(requireActivity(),{list->
@@ -50,33 +53,56 @@ class ChatInfoFragment : Fragment() {
             users = allUsers
             update()
         })
-        if((chat.users.split("%").size <= 2) || !chat.manager){
+        managerMode()
+        requireActivity().title = chat.name
+        return (binding.root)
+    }
+    private fun leaveChat(){
+        viewModel.leaveGroup(chat)
+    }
+    private fun managerMode() {
+        if(binding.chatInfoManager.isChecked){
             binding.apply {
+                chatInfoNameInput.isEnabled = true
+                chatInfoDescInput.isEnabled = true
+                chatInfoAddUser.visibility = View.VISIBLE
+                chatInfoAddUserBtn.visibility = View.VISIBLE
+                chatInfoRemoveUser.visibility = View.VISIBLE
+            }
+        }
+        else{
+            binding.apply {
+                chatInfoNameInput.isEnabled = false
+                chatInfoDescInput.isEnabled = false
                 chatInfoAddUser.visibility = View.GONE
                 chatInfoAddUserBtn.visibility = View.GONE
                 chatInfoRemoveUser.visibility = View.GONE
             }
+            if(chat.description != binding.chatInfoDescInput.text.toString()){
+                chat.description = binding.chatInfoDescInput.text.toString()
+                viewModel.updateChat(chat)
+                Toast.makeText(
+                    requireContext(),
+                    "change description ${chat.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            if(chat.name != binding.chatInfoNameInput.text.toString()){
+                chat.name = binding.chatInfoNameInput.text.toString()
+                viewModel.updateChat(chat)
+                Toast.makeText(
+                    requireContext(),
+                    "change name ${chat.name}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
-        requireActivity().title = chat.name
-        return (binding.root)
-    }
-
-    private fun editDescription() {
-        chat.description = binding.chatInfoDescInput.text.toString()
-        viewModel.updateChat(chat)
-        Toast.makeText(requireContext(),"change description ${chat.name}",Toast.LENGTH_SHORT).show()
-    }
-    private fun editName(){
-        chat.name = binding.chatInfoNameInput.text.toString()
-        viewModel.updateChat(chat)
-        Toast.makeText(requireContext(),"change name ${chat.name}",Toast.LENGTH_SHORT).show()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun update(){
-        switch = binding.chatInfoAddUserBtn.isChecked
         val chatUsers = chat.users.split("%")
-        if(!switch){
+        if(!binding.chatInfoAddUserBtn.isChecked){
             val currentList = arrayListOf<EntityUser>()
             chatUsers.forEach { user ->
                 currentList.add(users.filter { it.id == user }[0])
@@ -91,29 +117,54 @@ class ChatInfoFragment : Fragment() {
             }
             adapter.setCurrentList(currentList)
         }
-        adapter.notifyDataSetChanged()
     }
 
     private fun deleteUser(id: String) {
-        val toID = chat.users.split("%")
-        var temp = viewModel.getAuth().currentUser!!.uid
-        toID.forEach {to_ID->
-            if(to_ID != id && toID.none { it == id })
-                temp += "%$id"
+        if( id != viewModel.getAuth().currentUser!!.uid) {
+            val beforeUsers = chat.users.split("%")
+            var afterUsers = viewModel.getAuth().uid.toString()
+            beforeUsers.forEach {
+                if (it != id && it != viewModel.getAuth().uid.toString())
+                    afterUsers += "%$it"
+            }
+            chat.users = afterUsers
+            viewModel.updateChat(chat)
+            val message = EntityMessage(
+                text = "${chat.name}%${chat.description}%${chat.imageSrc}",
+                date = chat.users,
+                fromID = "-1",
+                chatID = chat.id,
+                ref = "-2"
+            )
+            viewModel.getFirebaseDatabase().getReference(id).push().setValue(message)
+            message.ref = "-1"
+            afterUsers.split("%").forEach {
+                if(it != viewModel.getAuth().uid.toString())
+                    viewModel.getFirebaseDatabase().getReference(it).push().setValue(message)
+            }
+            Toast.makeText(requireContext(), "delete user $id", Toast.LENGTH_SHORT).show()
         }
-        chat.users = temp
-        viewModel.updateChat(chat)
-        Toast.makeText(requireContext(),"delete user $id",Toast.LENGTH_SHORT).show()
     }
     private fun addUser(id: String) {
         chat.users += "%$id"
         viewModel.updateChat(chat)
+        val message = EntityMessage(
+            text = "${chat.name}%${chat.description}%${chat.imageSrc}",
+            date = chat.users,
+            fromID = "-1",
+            chatID = chat.id,
+            ref = "-1"
+        )
+        chat.users.split("%").forEach {
+            if(it != viewModel.getAuth().uid.toString())
+                viewModel.getFirebaseDatabase().getReference(it).push().setValue(message)
+        }
         Toast.makeText(requireContext(),"add user $id",Toast.LENGTH_SHORT).show()
     }
     private fun onClick(user: EntityUser) {
         val id = user.id
-        if(chat.manager) {
-            if (switch)
+        if(binding.chatInfoManager.isChecked) {
+            if (binding.chatInfoAddUserBtn.isChecked)
                 addUser(id)
             else
                 deleteUser(id)

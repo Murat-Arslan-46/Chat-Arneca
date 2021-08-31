@@ -52,7 +52,7 @@ class ContactAdapter (
     @SuppressLint("NotifyDataSetChanged")
     fun setCurrentList(users: List<EntityUser>) {
         currentList = users
-        this.notifyDataSetChanged()
+        notifyDataSetChanged()
     }
     fun getSelectedList() = selectedList
     fun clearSelected(){ selectedList.clear() }

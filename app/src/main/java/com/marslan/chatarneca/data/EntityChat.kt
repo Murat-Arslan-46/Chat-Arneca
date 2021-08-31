@@ -11,6 +11,6 @@ data class EntityChat(
     val toRef: String,
     var users: String,
     var description: String,
-    var imageSrc: String = "null",
-    var manager: Boolean = false
+    var imageSrc: String,
+    val manager: Boolean
 )

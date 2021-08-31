@@ -36,31 +36,33 @@ class ChatListAdapter(
         @SuppressLint("SimpleDateFormat")
         fun bind(position: Int, clickListener: (EntityChat) -> Unit, longClickListener: (EntityChat) -> Boolean) {
             val message = currentList[position]
-            var chat = EntityChat(1, "", "", "", "", manager = false)
-            chatList.forEach {
-                if(it.id == message.chatID){
-                    chat = it
+            if(chatList.isNotEmpty()){
+                var chat = chatList[0]
+                chatList.forEach {
+                    if (it.id == message.chatID) {
+                        chat = it
+                    }
                 }
-            }
-            if(chat.users.split("%").size > 2)
-                binding.chatImage.setImageResource(R.drawable.ic_list_group)
-            val sdf = SimpleDateFormat("dd/MM/yy HH:mm")
-            val date = sdf.format(Date())
-            val currentDate = date.split(" ")
-            val messageDate = message.date.split(" ")
-            binding.chatDate.text =
-                if(messageDate[0] == currentDate[0])
-                    messageDate[1]
+                if (chat.users.split("%").size > 2)
+                    binding.chatImage.setImageResource(R.drawable.ic_list_group)
+                val sdf = SimpleDateFormat("dd/MM/yy HH:mm")
+                val date = sdf.format(Date())
+                val currentDate = date.split(" ")
+                val messageDate = message.date.split(" ")
+                binding.chatDate.text =
+                    if (messageDate[0] == currentDate[0])
+                        messageDate[1]
+                    else
+                        messageDate[0]
+                binding.chatText.text = message.text
+                if (!message.iSaw)
+                    binding.chatText.setTypeface(binding.chatName.typeface, Typeface.BOLD)
                 else
-                    messageDate[0]
-            binding.chatText.text = message.text
-            if(!message.iSaw)
-                binding.chatText.setTypeface(binding.chatName.typeface,Typeface.BOLD)
-            else
-                binding.chatText.setTypeface(binding.chatName.typeface,Typeface.NORMAL)
-            binding.chatName.text = chat.name
-            binding.root.setOnClickListener { clickListener(chat) }
-            binding.root.setOnLongClickListener { longClickListener(chat) }
+                    binding.chatText.setTypeface(binding.chatName.typeface, Typeface.NORMAL)
+                binding.chatName.text = chat.name
+                binding.root.setOnClickListener { clickListener(chat) }
+                binding.root.setOnLongClickListener { longClickListener(chat) }
+            }
         }
     }
 }

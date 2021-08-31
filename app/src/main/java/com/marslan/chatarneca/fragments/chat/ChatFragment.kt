@@ -70,6 +70,12 @@ class ChatFragment : Fragment() {
             binding.chatMessageList.smoothScrollToPosition(adapter.itemCount)
         })
         requireActivity().title = chat.name
+        if(chat.toRef == "0"){
+            binding.chatSendMessage.setOnClickListener {  }
+            binding.chatSendMedia.setOnClickListener {  }
+            binding.chatInputText.isEnabled = false
+            binding.chatInputText.hint = "You cannot send messages to this chat"
+        }
         return (binding.root)
     }
 
@@ -184,7 +190,9 @@ class ChatFragment : Fragment() {
                 true
             }
             R.id.delete -> {
-                Log.d("delete","chat")
+                adapter.getSelected().forEach{
+                    viewModel.deleteMessage(it)
+                }
                 true
             }
             R.id.info -> {

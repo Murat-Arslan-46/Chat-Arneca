@@ -25,7 +25,7 @@ class ChatListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentChatListBinding.inflate(inflater, container, false)
 
         adapter = ChatListAdapter (listOf(), listOf(),this::openChat,this::deleteChat)

@@ -38,7 +38,6 @@ class MainFragment : Fragment() {
         )
         adapter = MainAdapter(fragmentList, requireActivity().supportFragmentManager, lifecycle)
         binding.vpHome.adapter = adapter
-        binding.vpHome.currentItem = 1
         TabLayoutMediator(binding.tabs,binding.vpHome){tab, position ->
             tab.icon = requireActivity().getDrawable(adapter.icon[position])
         }.attach()
