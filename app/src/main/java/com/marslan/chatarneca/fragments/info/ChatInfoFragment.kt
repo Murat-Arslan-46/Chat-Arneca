@@ -16,6 +16,7 @@ import com.marslan.chatarneca.data.EntityMessage
 import com.marslan.chatarneca.data.EntityUser
 import com.marslan.chatarneca.databinding.FragmentChatInfoBinding
 import com.marslan.chatarneca.fragments.contact.ContactAdapter
+import com.marslan.chatarneca.fragments.main.group.GroupFragment
 
 class ChatInfoFragment : Fragment() {
 
@@ -42,7 +43,7 @@ class ChatInfoFragment : Fragment() {
             if(!chat.manager)
                 chatInfoManager.visibility = View.GONE
             chatInfoManager.setOnClickListener { managerMode() }
-            if(chat.toRef != chat.id.toString())
+            if(chat.toRef != chat.id.toString() && chat.toRef != "0")
                 chatInfoLeave.visibility = View.GONE
             chatInfoLeave.setOnClickListener { leaveChat() }
         }
@@ -59,6 +60,34 @@ class ChatInfoFragment : Fragment() {
     }
     private fun leaveChat(){
         viewModel.leaveGroup(chat)
+        val beforeUsers = chat.users.split("%")
+        var afterUsers = ""
+        beforeUsers.forEachIndexed { index, it ->
+            if(index != 0){
+                if (it != viewModel.getAuth().uid.toString())
+                    afterUsers += "%$it"
+            }
+            else{
+                if (it != viewModel.getAuth().uid.toString())
+                    afterUsers += it
+            }
+        }
+        chat.users = afterUsers
+        val message = EntityMessage(
+            text = "${chat.name}%${chat.description}%${chat.imageSrc}",
+            date = chat.users,
+            fromID = "-1",
+            chatID = chat.id,
+            ref = "-1"
+        )
+        if(chat.manager)
+            message.ref = "-2"
+        afterUsers.split("%").forEach {
+            viewModel.getFirebaseDatabase().getReference(it).push().setValue(message)
+        }
+        Toast.makeText(requireContext(), "leave the group", Toast.LENGTH_SHORT).show()
+        findNavController().navigateUp()
+        findNavController().navigateUp()
     }
     private fun managerMode() {
         if(binding.chatInfoManager.isChecked){

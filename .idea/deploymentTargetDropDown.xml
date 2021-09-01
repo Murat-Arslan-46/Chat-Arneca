@@ -62,6 +62,24 @@
           </Key>
         </deviceKey>
       </Target>
+      <Target>
+        <type value="QUICK_BOOT_TARGET" />
+        <deviceKey>
+          <Key>
+            <type value="VIRTUAL_DEVICE_PATH" />
+            <value value="C:\Users\Murat\.android\avd\Pixel_4_XL_API_28.avd" />
+          </Key>
+        </deviceKey>
+      </Target>
+      <Target>
+        <type value="QUICK_BOOT_TARGET" />
+        <deviceKey>
+          <Key>
+            <type value="VIRTUAL_DEVICE_PATH" />
+            <value value="C:\Users\Murat\.android\avd\Pixel_XL_API_28.avd" />
+          </Key>
+        </deviceKey>
+      </Target>
     </targetsSelectedWithDialog>
   </component>
 </project>
