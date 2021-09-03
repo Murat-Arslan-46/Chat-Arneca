@@ -25,6 +25,9 @@ import com.marslan.chatarneca.data.EntityMessage
 import com.marslan.chatarneca.data.EntityUser
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.data.User
+import com.onesignal.OneSignal
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -39,45 +42,28 @@ class MainActivity : AppCompatActivity() {
             .addChildEventListener(listener())
         viewModel.getFirebaseDatabase().getReference(getString(R.string.firebaseUserRef))
             .addChildEventListener(object : ChildEventListener{
-                override fun onCancelled(error: DatabaseError) {}
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    if(snapshot.value != null){
-                        val user = snapshot.getValue<User>()
-                        if(user != null){
-                            viewModel.updateUser(
-                                EntityUser(
-                                    user.id,
-                                    user.name,
-                                    user.mail,
-                                    user.phone,
-                                    user.imageSrc,
-                                    user.userName,
-                                    user.description
-                                )
-                            )
-                        }
-                    }
-                }
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                     if(snapshot.value != null){
-                        val user = snapshot.getValue<User>()
-                        if(user != null){
-                            viewModel.updateUser(
-                                EntityUser(
-                                    user.id,
-                                    user.name,
-                                    user.mail,
-                                    user.phone,
-                                    user.imageSrc,
-                                    user.userName,
-                                    user.description
-                                )
-                            )
+                        snapshot.getValue<User>()?.apply {
+                            val list = viewModel.getUsers().value.orEmpty().filter { id == it.id }
+                            if(list.isNotEmpty()) {
+                                val temp = EntityUser(id,name,mail,phone,imageSrc,userName,description)
+                                viewModel.updateUser(temp)
+                            }
                         }
                     }
                 }
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
                 override fun onChildRemoved(snapshot: DataSnapshot) {}
+                override fun onCancelled(error: DatabaseError) {}
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    if(snapshot.value != null){
+                        snapshot.getValue<User>()?.apply {
+                            val temp = EntityUser(id,name,mail,phone,imageSrc,userName,description)
+                            viewModel.newUser(temp)
+                        }
+                    }
+                }
             })
         viewModel.getAllChat().observe(this,{
             it.forEach { chat ->
@@ -160,26 +146,18 @@ class MainActivity : AppCompatActivity() {
                 if(snapshot.value != null) {
                     val message = snapshot.getValue<EntityMessage>()
                     if (message != null) {
-                        viewModel.checkPointNewMessage(message)
+                        viewModel.checkPointNewMessage(message)/*
                         if( message.fromID != "-1" &&
                             message.fromID != viewModel.getAuth().uid.toString()
                         )
-                            notification(message)
+                            notification(message)*/
                     }
                 }
             }
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                Log.d("change data",";)")
-            }
-            override fun onCancelled(error: DatabaseError) {
-                Log.d("cancel firebase",";)")
-            }
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                Log.d("moved child",";)")
-            }
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                Log.d("empty firebase",";)")
-            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onCancelled(error: DatabaseError) {}
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
         }
     }
     private fun listenerStatus():ChildEventListener{
@@ -198,15 +176,9 @@ class MainActivity : AppCompatActivity() {
                     viewModel.checkMessageSend(ref,count)
                 }
             }
-            override fun onCancelled(error: DatabaseError) {
-                Log.d("cancel firebase",";)")
-            }
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                Log.d("moved child",";)")
-            }
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                Log.d("empty firebase",";)")
-            }
+            override fun onCancelled(error: DatabaseError) {}
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
         }
     }
 }

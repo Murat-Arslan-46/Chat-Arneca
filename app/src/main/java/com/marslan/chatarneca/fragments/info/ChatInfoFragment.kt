@@ -9,14 +9,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.database.ktx.getValue
 import com.marslan.chatarneca.R
-import com.marslan.chatarneca.data.SharedViewModel
-import com.marslan.chatarneca.data.EntityChat
-import com.marslan.chatarneca.data.EntityMessage
-import com.marslan.chatarneca.data.EntityUser
+import com.marslan.chatarneca.data.*
 import com.marslan.chatarneca.databinding.FragmentChatInfoBinding
 import com.marslan.chatarneca.fragments.contact.ContactAdapter
 import com.marslan.chatarneca.fragments.main.group.GroupFragment
+import java.lang.Exception
 
 class ChatInfoFragment : Fragment() {
 
@@ -134,7 +133,23 @@ class ChatInfoFragment : Fragment() {
         if(!binding.chatInfoAddUserBtn.isChecked){
             val currentList = arrayListOf<EntityUser>()
             chatUsers.forEach { user ->
-                currentList.add(users.filter { it.id == user }[0])
+                try {
+                    currentList.add(users.filter { it.id == user }[0])
+                }catch (e: Exception){
+                    viewModel.getFirebaseDatabase()
+                        .getReference(getString(R.string.firebaseUserRef))
+                        .child(user).get().addOnSuccessListener {
+                            if(it != null) {
+                                it.getValue<User>()?.apply {
+                                    viewModel.newUser(
+                                        EntityUser(
+                                            id, name, mail, phone, imageSrc, userName, description
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                }
             }
             adapter.setCurrentList(currentList)
         }

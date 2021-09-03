@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 android {
     compileSdk 31
@@ -45,6 +46,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage-ktx:20.0.0'
     def room_version = "2.3.0"
 
+    implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")

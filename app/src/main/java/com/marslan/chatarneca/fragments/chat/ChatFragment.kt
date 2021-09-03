@@ -22,6 +22,9 @@ import com.marslan.chatarneca.data.EntityChat
 import com.marslan.chatarneca.data.EntityMessage
 import com.marslan.chatarneca.data.SharedViewModel
 import com.marslan.chatarneca.databinding.FragmentChatBinding
+import com.onesignal.OneSignal
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -55,7 +58,28 @@ class ChatFragment : Fragment() {
         adapter.isNotGroup(chat.users.split("%").size <= 2)
         binding.apply{
             chatMessageList.adapter = adapter
-            chatSendMessage.setOnClickListener { onClickSend() }
+            chatSendMessage.setOnClickListener { //onClickSend()
+                Thread {
+                    val deviceState = OneSignal.getDeviceState()
+                    if (deviceState != null && deviceState.isSubscribed) {
+                        try {
+                            val notificationContent = JSONObject(
+                                "{'include_player_ids': ['112911c9-b2a7-4393-bd64-8eb4aae12f07']," +
+                                        "'headings': {'en': 'Title'}," +
+                                        "'contents': {'en': 'Message'}}"
+                            )
+                            OneSignal.postNotification(
+                                notificationContent,
+                                object : OneSignal.PostNotificationResponseHandler {
+                                    override fun onSuccess(response: JSONObject) {}
+                                    override fun onFailure(response: JSONObject) {}
+                                })
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                    }
+                }.start()
+            }
             chatSendMedia.setOnClickListener { onClickAttach() }
             chatMediaCancel.setOnClickListener { cancelMedia() }
         }
